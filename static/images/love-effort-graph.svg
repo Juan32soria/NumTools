@@ -1,0 +1,24 @@
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+      <!-- Grid lines -->
+      <g stroke="#ccc" stroke-width="0.5">
+        <line x1="50" y1="250" x2="350" y2="250"/>
+        <line x1="50" y1="200" x2="350" y2="200"/>
+        <line x1="50" y1="150" x2="350" y2="150"/>
+        <line x1="50" y1="100" x2="350" y2="100"/>
+        <line x1="50" y1="50" x2="350" y2="50"/>
+      </g>
+    
+      <!-- Love line -->
+      <path d="M50,250 Q200,150 350,50" fill="none" stroke="#FF69B4" stroke-width="3"/>
+      
+      <!-- Effort line -->
+      <path d="M50,250 Q200,100 350,80" fill="none" stroke="#4B0082" stroke-width="3"/>
+      
+      <!-- Legend -->
+      <g transform="translate(50, 20)">
+        <rect x="0" y="0" width="20" height="3" fill="#FF69B4"/>
+        <text x="30" y="5" fill="#2C2C2C" font-size="12">Love</text>
+        <rect x="100" y="0" width="20" height="3" fill="#4B0082"/>
+        <text x="130" y="5" fill="#2C2C2C" font-size="12">Effort</text>
+      </g>
+    </svg>

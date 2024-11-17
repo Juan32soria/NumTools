@@ -1,0 +1,239 @@
+{% load static %}
+
+<!-- HTML -->
+<!DOCTYPE html>
+<!-- Language -->
+<html lang="en">
+	<!-- Head -->
+	<head>
+		<!-- Meta tags -->
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="Found the square root of a number using numerical methods">
+		<meta name="keywords" content="numerical methods, square root, numerical analysis, math, math.js, chart.js">
+		<!-- Title -->
+		<title>{% block title %}{% endblock %} - NumTools</title>
+		<!-- Favicon -->
+		<link rel="icon" type="image/png" sizes="96x96" href="{% static 'images/FaviconNumTools.png' %}">
+		<!-- Fonts -->
+		<link href="https://fonts.googleapis.com/css2?family=Signika:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+		<!-- Stylesheets -->
+		<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+		<!-- Custom Styles -->
+		{% block styles %}{% endblock %}
+	</head>
+	<!-- Body -->
+	<body>
+		<!-- Navbar -->
+		<nav class="navbar">
+			<div class="navbar-container">
+				<!-- Logo -->
+				<a href="{% url 'index' %}" class="logo-container">
+					<img src="{% static 'images/LogoNumToolsIcon.png' %}" alt="NumTools Logo Icon" class="logo">
+					<img src="{% static 'images/LogoNumToolsNBGText.png' %}" alt="NumTools Logo Text" class="name">
+				</a>
+				<!-- Navigation Links -->
+				<div class="nav-links">
+					<!-- Methods Dropdown -->
+					<div class="dropdown">
+						<button class="dropbtn">
+							Methods
+							<svg class="arrow" viewBox="0 0 24 24">
+								<path d="M7 10l5 5 5-5z"/>
+							</svg>
+						</button>
+						<div class="dropdown-content">
+							<div class="dropdown-grid">
+								<div class="dropdown-column">
+									<h3>Open Methods</h3>
+									<a href="{% url 'bisection' %}">Bisection</a>
+									<a href="#">Newton-Raphson</a>
+									<a href="#">Secant</a>
+									<a href="#">Fixed Point</a>
+								</div>
+								<div class="dropdown-column">
+									<h3>Closed Methods</h3>
+									<a href="#">Regula Falsi</a>
+									<a href="#">Müller</a>
+									<a href="#">Bairstow</a>
+								</div>
+							</div>
+						</div>
+					</div>
+					<a href="{% url 'about' %}" class="nav-link">About</a>
+				</div>
+				<!-- Mobile Menu Button -->
+				<button class="hamburger" aria-label="Toggle menu">
+					<span></span>
+					<span></span>
+					<span></span>
+				</button>
+			</div>
+		</nav>
+		<!-- Decider -->
+		{% if is_content %}
+		<!-- Main Content Info -->
+			<main class="main-content">
+				{% block content %}{% endblock %}
+			</main>
+		{% else %}
+			<!-- Main Content Methods -->
+			<main class="main-content">
+				<!-- Main Grid Layout -->
+				<div class="content-grid">
+					<!-- Left Column -->
+					<div class="left-column">
+						<!-- Method Intro Section -->
+						<section class="method-intro glass-container">
+							<h1 class="method-title">{% block header %}{% endblock %}</h1>
+							<div class="method-description">
+								{% block description %}{% endblock %}
+							</div>
+						</section>
+						<!-- Help, Syntax, and Examples Grid -->
+						<div class="info-grid glass-container">
+							<!-- Help Section -->
+							<div class="info-section">
+								<h2>Help</h2>
+								<div class="info-content">
+									{% block help %}{% endblock %}
+								</div>
+							</div>
+							<!-- Syntax Section -->
+							<div class="info-section">
+								<h2>Syntax</h2>
+								<div class="info-content">
+									{% block syntax %}{% endblock %}
+								</div>
+							</div>
+							<!-- Examples Section -->
+							<div class="info-section">
+								<h2>Examples</h2>
+								<div class="info-content">
+									{% block examples %}{% endblock %}
+								</div>
+							</div>
+						</div>
+						{% if root is not None %}
+							{% if table %}
+								<div class="table-container">
+									<h3>Iteration Table</h3>
+									<table class="iteration-table">
+										<thead>
+											<tr>
+												<th>Iteration</th>
+												<th>x_n</th>
+												<th>f(x_n)</th>
+												<th>{{ error_type }}</th>
+											</tr>
+										</thead>
+										<tbody>
+											{% for row in table %}
+												<tr>
+													<td>{{ row.iteration }}</td>
+													<td>{{ row.x_n }}</td>
+													<td>{{ row.fx_n }}</td>
+													<td>{{ row.error }}</td>
+												</tr>
+											{% endfor %}
+										</tbody>
+									</table>
+								</div>
+							{% endif %}
+						{% endif %}
+					</div>
+					<!-- Right Column -->
+					<div class="right-column">
+						<!-- Form Section -->
+						<div class="form-section glass-container">
+								{% block form %}{% endblock %}
+						</div>
+						<!-- Results Section -->
+						{% if root is not None %}
+							<div class="results-section glass-container">
+								<h2>Results</h2>
+								<div class="result-content">
+									<p>The approximate root for: <span class="function-value">{{ fun }}</span> is</p>
+									<p class="root-value">{{ root }}</p>
+								</div>
+								{% if graph %}
+									<div class="result-graph-container">
+										<h3>Function Graph</h3>
+										{% block graph %}{% endblock %}
+									</div>
+								{% endif %}
+							</div>
+						{% endif %}
+					</div>
+				</div>
+				<!-- Notifications -->
+				{% if msg %}
+					{% for message in msg %}
+						<div class="notification {% if 'Error' in message %}error{% else %}success{% endif %}">
+							{{ message }}
+						</div>
+					{% endfor %}
+				{% endif %}
+			</main>
+		{% endif %}
+		<!-- Scroll to Top Button -->
+    <button class="scroll-top" aria-label="Scroll to top">
+			<svg viewBox="0 0 24 24">
+				<path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z"/>
+			</svg>
+		</button>
+		<!-- Footer -->
+		<footer class="footer">
+			<div class="footer-container">
+				<div class="footer-column">
+					<h3>Legal Information</h3>
+					<div class="footer-content">
+						<p>&copy; 2024 NumTools. All rights reserved.</p>
+						<p>Made with 
+							<span class="heart">🧪</span> 
+							<span class="sparkling">🔬</span> 
+							by the NumTools Team
+						</p>
+						<div class="legal-links">
+							<a href="#" class="footer-link">Privacy Policy</a>
+							<span class="separator">|</span>
+							<a href="#" class="footer-link">Terms of Service</a>
+						</div>
+					</div>
+				</div>
+				<div class="footer-column">
+					<h3>Connect with Us</h3>
+					<div class="footer-content">
+						<div class="social-links">
+							<a href="https://github.com/dcmendoza" class="github-link" target="_blank" rel="noopener noreferrer">
+								<img src="{% static 'images/github-icon.png' %}" alt="GitHub" class="github-icon">
+								Danna Mendoza
+							</a>
+							<a href="https://github.com/osozzz" class="github-link" target="_blank" rel="noopener noreferrer">
+								<img src="{% static 'images/github-icon.png' %}" alt="GitHub" class="github-icon">
+								Alejandro Osorno
+							</a>
+							<a href="https://github.com/developer3" class="github-link" target="_blank" rel="noopener noreferrer">
+								<img src="{% static 'images/github-icon.png' %}" alt="GitHub" class="github-icon">
+								Juan Jose Villa
+							</a>
+						</div>
+					</div>
+				</div>
+				<div class="footer-column">
+					<h3>Love vs Effort Graph</h3>
+					<div class="footer-content">
+						<div class="graph-container">
+							<img src="{% static 'images/love-effort-graph.svg' %}" alt="Love vs Effort Graph" class="static-graph">
+						</div>
+					</div>
+				</div>
+			</div>
+		</footer>
+		<!-- Scripts -->
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+		<script src="{% static 'js/script.js' %}"></script>
+		<!-- Custom Scripts -->
+		{% block scripts %}{% endblock %}
+	</body>
+</html>

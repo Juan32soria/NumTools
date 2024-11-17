@@ -1,0 +1,286 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Welcome{% endblock %}
+
+{% block styles%}
+<link rel="stylesheet" href="{% static 'css/core.css' %}" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="bento-grid">
+	<section class="bento-item hero-section">
+		<div class="hero-content">
+			<img src="{% static 'images/LogoNumToolsNBG.png' %}" alt="App Logo" class="hero-logo">
+			<h2 class="hero-subtitle">Discover the Power of Numbers</h2>
+			<p class="hero-description">
+				Unlock the potential of advanced numerical methods with our cutting-edge application. 
+				From interpolation to optimization, we provide the tools you need to solve complex 
+				mathematical challenges with ease and precision.
+			</p>
+			<div class="hero-features">
+				<div class="feature">
+					<i class="fas fa-calculator"></i>
+					<span>Precise Calculations</span>
+				</div>
+				<div class="feature">
+					<i class="fas fa-chart-line"></i>
+					<span>Visual Insights</span>
+				</div>
+				<div class="feature">
+					<i class="fas fa-cogs"></i>
+					<span>Multiple Methods</span>
+				</div>
+			</div>
+		</div>
+		<div class="hero-background">
+			<div class="particle"></div>
+			<div class="particle"></div>
+			<div class="particle"></div>
+		</div>
+	</section>
+
+	<section class="bento-item cta-section">
+		<a href="{% url 'bisection' %}" class="cta-button">
+			<span class="cta-text">
+				<span class="cta-line">Calculate</span>
+				<span class="cta-line">Now</span>
+			</span>
+			<span class="cta-circle"></span>
+		</a>
+	</section>
+
+	<section class="bento-item symbols-section">
+		<div class="logo-slider">
+			<div class="logo-track">
+				<!-- Primer conjunto de logos -->
+				<div class="logo-item">
+					<img src="{% static 'images/FaviconNumTools.png' %}" alt="My App Logo" class="logos myapp">
+				</div>
+				<div class="logo-item">
+					<svg class="logo django" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M11.146 0h3.924v18.166c-2.013.382-3.491.535-5.096.535-4.791 0-7.288-2.166-7.288-6.32 0-4.002 2.65-6.6 6.753-6.6.637 0 1.121.05 1.707.203zm0 9.143a3.894 3.894 0 00-1.325-.204c-1.988 0-3.134 1.223-3.134 3.365 0 2.09 1.096 3.236 3.109 3.236.433 0 .79-.025 1.35-.102V9.142zM21.314 6.06v9.098c0 3.134-.229 4.638-.917 5.937-.637 1.249-1.478 2.039-3.211 2.905l-3.644-1.733c1.733-.815 2.574-1.53 3.109-2.625.561-1.121.739-2.421.739-5.835V6.059h3.924zM17.39.021h3.924v4.026H17.39z"/></svg>
+				</div>
+				<div class="math-symbol">δ</div>
+				<div class="logo-item">
+					<svg class="logo docker" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13.983 11.078h2.119a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.119a.185.185 0 00-.185.185v1.888c0 .102.083.185.185.185m-2.954-5.43h2.118a.186.186 0 00.186-.186V3.574a.186.186 0 00-.186-.185h-2.118a.185.185 0 00-.185.185v1.888c0 .102.082.185.185.185m0 2.716h2.118a.187.187 0 00.186-.186V6.29a.186.186 0 00-.186-.185h-2.118a.185.185 0 00-.185.185v1.887c0 .102.082.185.185.186m-2.93 0h2.12a.186.186 0 00.184-.186V6.29a.185.185 0 00-.185-.185H8.1a.185.185 0 00-.185.185v1.887c0 .102.083.185.185.186m-2.964 0h2.119a.186.186 0 00.185-.186V6.29a.185.185 0 00-.185-.185H5.136a.186.186 0 00-.186.185v1.887c0 .102.084.185.186.186m5.893 2.715h2.118a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.118a.185.185 0 00-.185.185v1.888c0 .102.082.185.185.185m-2.93 0h2.12a.185.185 0 00.184-.185V9.006a.185.185 0 00-.184-.186h-2.12a.185.185 0 00-.184.185v1.888c0 .102.083.185.185.185m-2.964 0h2.119a.185.185 0 00.185-.185V9.006a.185.185 0 00-.184-.186h-2.12a.186.186 0 00-.186.186v1.887c0 .102.084.185.186.185m-2.92 0h2.12a.185.185 0 00.184-.185V9.006a.185.185 0 00-.184-.186h-2.12a.185.185 0 00-.184.185v1.888c0 .102.082.185.185.185M23.763 9.89c-.065-.051-.672-.51-1.954-.51-.338.001-.676.03-1.01.087-.248-1.7-1.653-2.53-1.716-2.566l-.344-.199-.226.327c-.284.438-.49.922-.612 1.43-.23.97-.09 1.882.403 2.661-.595.332-1.55.413-1.744.42H.751a.751.751 0 00-.75.748 11.376 11.376 0 00.692 4.062c.545 1.428 1.355 2.48 2.41 3.124 1.18.723 3.1 1.137 5.275 1.137.983.003 1.963-.086 2.93-.266a12.248 12.248 0 003.823-1.389c.98-.567 1.86-1.288 2.61-2.136 1.252-1.418 1.998-2.997 2.553-4.4h.221c1.372 0 2.215-.549 2.68-1.009.309-.293.55-.65.707-1.046l.098-.288Z"/></svg>
+				</div>
+				<div class="math-symbol">∞</div>
+				<div class="logo-item">
+					<svg class="logo github" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+				</div>
+				<div class="math-symbol">∑</div>
+				
+				<!-- Repetición de logos para efecto infinito -->
+				<div class="logo-item">
+					<img src="{% static 'images/FaviconNumTools.png' %}" alt="My App Logo" class="logos myapp">
+				</div>
+				<div class="logo-item">
+					<svg class="logo django" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M11.146 0h3.924v18.166c-2.013.382-3.491.535-5.096.535-4.791 0-7.288-2.166-7.288-6.32 0-4.002 2.65-6.6 6.753-6.6.637 0 1.121.05 1.707.203zm0 9.143a3.894 3.894 0 00-1.325-.204c-1.988 0-3.134 1.223-3.134 3.365 0 2.09 1.096 3.236 3.109 3.236.433 0 .79-.025 1.35-.102V9.142zM21.314 6.06v9.098c0 3.134-.229 4.638-.917 5.937-.637 1.249-1.478 2.039-3.211 2.905l-3.644-1.733c1.733-.815 2.574-1.53 3.109-2.625.561-1.121.739-2.421.739-5.835V6.059h3.924zM17.39.021h3.924v4.026H17.39z"/></svg>
+				</div>
+				<div class="math-symbol">δ</div>
+				<div class="logo-item">
+					<svg class="logo docker" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13.983 11.078h2.119a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.119a.185.185 0 00-.185.185v1.888c0 .102.083.185.185.185m-2.954-5.43h2.118a.186.186 0 00.186-.186V3.574a.186.186 0 00-.186-.185h-2.118a.185.185 0 00-.185.185v1.888c0 .102.082.185.185.185m0 2.716h2.118a.187.187 0 00.186-.186V6.29a.186.186 0 00-.186-.185h-2.118a.185.185 0 00-.185.185v1.887c0 .102.082.185.185.186m-2.93 0h2.12a.186.186 0 00.184-.186V6.29a.185.185 0 00-.185-.185H8.1a.185.185 0 00-.185.185v1.887c0 .102.083.185.185.186m-2.964 0h2.119a.186.186 0 00.185-.186V6.29a.185.185 0 00-.185-.185H5.136a.186.186 0 00-.186.185v1.887c0 .102.084.185.186.186m5.893 2.715h2.118a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.118a.185.185 0 00-.185.185v1.888c0 .102.082.185.185.185m-2.93 0h2.12a.185.185 0 00.184-.185V9.006a.185.185 0 00-.184-.186h-2.12a.185.185 0 00-.184.185v1.888c0 .102.083.185.185.185m-2.964 0h2.119a.185.185 0 00.185-.185V9.006a.185.185 0 00-.184-.186h-2.12a.186.186 0 00-.186.186v1.887c0 .102.084.185.186.185m-2.92 0h2.12a.185.185 0 00.184-.185V9.006a.185.185 0 00-.184-.186h-2.12a.185.185 0 00-.184.185v1.888c0 .102.082.185.185.185M23.763 9.89c-.065-.051-.672-.51-1.954-.51-.338.001-.676.03-1.01.087-.248-1.7-1.653-2.53-1.716-2.566l-.344-.199-.226.327c-.284.438-.49.922-.612 1.43-.23.97-.09 1.882.403 2.661-.595.332-1.55.413-1.744.42H.751a.751.751 0 00-.75.748 11.376 11.376 0 00.692 4.062c.545 1.428 1.355 2.48 2.41 3.124 1.18.723 3.1 1.137 5.275 1.137.983.003 1.963-.086 2.93-.266a12.248 12.248 0 003.823-1.389c.98-.567 1.86-1.288 2.61-2.136 1.252-1.418 1.998-2.997 2.553-4.4h.221c1.372 0 2.215-.549 2.68-1.009.309-.293.55-.65.707-1.046l.098-.288Z"/></svg>
+				</div>
+				<div class="math-symbol">∞</div>
+				<div class="logo-item">
+					<svg class="logo github" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+				</div>
+				<div class="math-symbol">∑</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="bento-item animate-section">
+		<canvas id="particleCanvas"></canvas>
+		<div class="animate-overlay">
+			<h3>Interactive Maths</h3>
+			<p>Hover to discover particles</p>
+		</div>
+	</section>
+
+	<section class="bento-item methods-section">
+		<h2 class="section-title">Try a method</h2>
+		<div class="carousel-container">
+			<div class="carousel-track">
+				<!-- Bisection Method Card -->
+				<div class="method-card">
+					<h3>Bisection Method</h3>
+					<div class="graph-container">
+						<canvas class="graph-canvas" data-method="bisection"></canvas>
+					</div>
+					<button class="calculate-btn">Calculate</button>
+				</div>
+				
+				<!-- Newton's Method Card -->
+				<div class="method-card">
+					<h3>Newton's Method</h3>
+					<div class="graph-container">
+						<canvas class="graph-canvas" data-method="newton"></canvas>
+					</div>
+					<button class="calculate-btn">Calculate</button>
+				</div>
+				
+				<!-- Secant Method Card -->
+				<div class="method-card">
+					<h3>Secant Method</h3>
+					<div class="graph-container">
+						<canvas class="graph-canvas" data-method="secant"></canvas>
+					</div>
+					<button class="calculate-btn">Calculate</button>
+				</div>
+				
+				<!-- Fixed-Point Iteration Card -->
+				<div class="method-card">
+					<h3>Fixed-Point Iteration</h3>
+					<div class="graph-container">
+						<canvas class="graph-canvas" data-method="fixed-point"></canvas>
+					</div>
+					<button class="calculate-btn">Calculate</button>
+				</div>
+			</div>
+		</div>
+		<div class="carousel-controls">
+			<button class="prev-btn" aria-label="Previous slide">&#8592;</button>
+			<div class="pagination"></div>
+			<button class="next-btn" aria-label="Next slide">&#8594;</button>
+		</div>
+	</section>
+
+	<section class="bento-item member-section">
+		<div class="floating-symbols"></div>
+		<div class="members-container">
+			<!-- Member Card 1 -->
+			<div class="member-card">
+				<div class="avatar-wrapper">
+					<div class="avatar">
+						<span>DM</span>
+					</div>
+					<div class="sparkles">
+						<span class="sparkle">✦</span>
+						<span class="sparkle">✦</span>
+						<span class="sparkle">✦</span>
+						<span class="sparkle">✦</span>
+					</div>
+				</div>
+				<div class="member-info">
+					<h3>Danna Mendoza</h3>
+					<button class="expand-btn" aria-label="Show more info">+</button>
+				</div>
+				<div class="mini-profile">
+					<div class="mini-profile-header">
+						<div class="avatar large">
+							<span>DM</span>
+						</div>
+						<div class="mini-profile-title">
+							<h4>Danna Mendoza</h4>
+							<span class="role">Frontend Developer</span>
+						</div>
+					</div>
+					<div class="mini-profile-content">
+						<div class="stats">
+							<div class="stat-item">
+								<i class="stat-icon">⚡</i>
+								<span>3 Years</span>
+							</div>
+							<div class="stat-item">
+								<i class="stat-icon">🚀</i>
+								<span>15 Projects</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<!-- Member Card 2 -->
+			<div class="member-card">
+				<div class="avatar-wrapper">
+					<div class="avatar">
+						<span>AO</span>
+					</div>
+					<div class="sparkles">
+						<span class="sparkle">✦</span>
+						<span class="sparkle">✦</span>
+						<span class="sparkle">✦</span>
+						<span class="sparkle">✦</span>
+					</div>
+				</div>
+				<div class="member-info">
+					<h3>Alejandro Osorno</h3>
+					<button class="expand-btn" aria-label="Show more info">+</button>
+				</div>
+				<div class="mini-profile">
+					<div class="mini-profile-header">
+						<div class="avatar large">
+							<span>AO</span>
+						</div>
+						<div class="mini-profile-title">
+							<h4>Alejandro Osorno</h4>
+							<span class="role">Backend Developer</span>
+						</div>
+					</div>
+					<div class="mini-profile-content">
+						<div class="stats">
+							<div class="stat-item">
+								<i class="stat-icon">⚡</i>
+								<span>5 Years</span>
+							</div>
+							<div class="stat-item">
+								<i class="stat-icon">🚀</i>
+								<span>20 Projects</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+	
+			<!-- Member Card 3 -->
+			<div class="member-card">
+				<div class="avatar-wrapper">
+					<div class="avatar">
+						<span>JV</span>
+					</div>
+					<div class="sparkles">
+						<span class="sparkle">✦</span>
+						<span class="sparkle">✦</span>
+						<span class="sparkle">✦</span>
+						<span class="sparkle">✦</span>
+					</div>
+				</div>
+				<div class="member-info">
+					<h3>Juan Jose Villa</h3>
+					<button class="expand-btn" aria-label="Show more info">+</button>
+				</div>
+				<div class="mini-profile">
+					<div class="mini-profile-header">
+						<div class="avatar large">
+							<span>JV</span>
+						</div>
+						<div class="mini-profile-title">
+							<h4>Juan Jose Villa</h4>
+							<span class="role">Full Stack Developer</span>
+						</div>
+					</div>
+					<div class="mini-profile-content">
+						<div class="stats">
+							<div class="stat-item">
+								<i class="stat-icon">⚡</i>
+								<span>4 Years</span>
+							</div>
+							<div class="stat-item">
+								<i class="stat-icon">🚀</i>
+								<span>18 Projects</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/core.js' %}"></script>
+{% endblock %}
