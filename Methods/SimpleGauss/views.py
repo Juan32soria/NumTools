@@ -14,7 +14,7 @@ def simplegauss_view(request):
         except ValueError:
             matrix_size = 3  # Si el valor no es válido, usar predeterminado
 
-        form = SimpleGaussForm(request.POST, matrix_size=matrix_size)  # Reutilizando el formulario de Jacobi
+        form = SimpleGaussForm(request.POST, matrix_size=matrix_size)
 
         if form.is_valid():
             try:

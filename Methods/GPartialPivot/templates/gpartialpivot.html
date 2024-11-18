@@ -1,0 +1,321 @@
+{% extends 'base.html' %}
+
+{% block title %}Gauss with Partial Pivoting{% endblock %}
+
+{% block styles %}
+<style>
+.table-container {
+  margin: 20px 0;
+  overflow-x: auto;
+}
+
+.iteration-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.iteration-table th,
+.iteration-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.iteration-table th {
+  background-color: #6a0dad;
+  color: white;
+  text-align: center;
+}
+
+.matrix-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  background-color: rgba(106, 13, 173, 0.1);
+  border: 1px solid rgba(106, 13, 173, 0.4);
+  border-radius: 5px;
+}
+
+.matrix-table {
+  border-collapse: collapse;
+  margin: auto;
+}
+
+.matrix-table td {
+  border: 1px solid rgba(106, 13, 173, 0.2);
+  padding: 5px 10px;
+  text-align: center;
+  min-width: 50px;
+  font-family: "Courier New", Courier, monospace;
+  background-color: #f9f9f9;
+}
+
+.matrix-cell {
+  font-weight: bold;
+}
+
+.solution-container {
+  margin: 20px 0;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.solution-container h3 {
+  color: #6a0dad;
+}
+
+.solution-vector table {
+  margin: auto;
+  border-collapse: collapse;
+  width: 50%;
+}
+
+.solution-vector td {
+  padding: 8px 12px;
+  text-align: left;
+  font-family: "Courier New", Courier, monospace;
+  background-color: #e9ecef;
+  border: 1px solid #ddd;
+}
+
+.no-solution {
+  margin: 20px 0;
+  padding: 15px;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+  border-radius: 5px;
+}
+</style>
+{% endblock %}
+
+{% block header %}Gauss with Partial Pivoting{% endblock %}
+
+{% block description %}
+<p>The Gauss method with partial pivoting is a numerical algorithm to solve a system of linear equations \( A \cdot x = b \) by using forward elimination and back substitution with pivoting to improve numerical stability.</p>
+{% endblock %}
+
+{% block help %}
+<p>To use the Gauss method with partial pivoting:</p>
+<ul>
+    <li>Provide a square coefficient matrix \( A \) and a right-hand side vector \( b \).</li>
+    <li>Specify a tolerance and maximum iterations (if using error-based convergence).</li>
+</ul>
+{% endblock %}
+
+{% block syntax %}
+<p>The general syntax for the Gauss method with partial pivoting is:</p>
+<pre><code>gauss_pivoteo_parcial(A, b, tol, max_iter)</code></pre>
+<p>Where:</p>
+<ul>
+    <li><strong>A</strong>: Coefficient matrix (size \( n \times n \)).</li>
+    <li><strong>b</strong>: Right-hand side vector.</li>
+    <li><strong>tol</strong>: Tolerance for error-based stopping criteria.</li>
+    <li><strong>max_iter</strong>: Maximum number of iterations.</li>
+</ul>
+{% endblock %}
+
+{% block examples %}
+<p>Example: Solve a system of linear equations:</p>
+<pre><code>Matrix A:
+| 10  -1   2 |
+| -1  11  -1 |
+|  2  -1  10 |
+
+Vector b: [6, 25, -11]
+Tolerance: 0.0001
+Max Iterations: 100</code></pre>
+{% endblock %}
+
+{% block table %}
+{% if table %}
+<div class="table-container">
+    <h3>Iteration Results</h3>
+    <table class="iteration-table">
+        <thead>
+            <tr>
+                <th>Iteration</th>
+                <th>Matrix State</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in table %}
+            <tr>
+              <td style="text-align: center; font-weight: bold;">{{ row.iteration }}</td>
+              <td>
+                  <div class="matrix-container">
+                      <table class="matrix-table">
+                          {% for matrix_row in row.matrix %}
+                          <tr>
+                              {% for element in matrix_row %}
+                              <td class="matrix-cell">{{ element|floatformat:2 }}</td>
+                              {% endfor %}
+                          </tr>
+                          {% endfor %}
+                      </table>
+                  </div>
+              </td>
+          </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block form %}
+<form method="POST" action="{% url 'partial_pivot' %}">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    <div class="form-group">
+        <label for="matrix_size">Matrix Size:</label>
+        {{ form.matrix_size }}
+    </div>
+
+    <div id="matrix_inputs" style="display: flex; gap: 20px; margin-top: 5px;">
+        <!-- Matriz A -->
+        <div style="border: 1px solid #007bff; padding: 10px; background-color: rgba(106, 13, 173, 0.2); border-radius: 5px; flex-grow: 1;">
+            <h5 style="text-align: center; margin-bottom:5px; color: #6a0dad">Matrix A</h5>
+            <div>
+                {% for row in matrix_fields %}
+                <div style="display: flex; justify-content: center; gap: 5px; margin-bottom: 5px;">
+                    {% for field in row %}
+                    <div>
+                        {{ field }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Vector b -->
+        <div style="border: 1px solid #d63384; padding: 10px; background-color: rgba(106, 13, 173, 0.2); border-radius: 5px;">
+            <h5 style="text-align: center; margin-bottom:5px; color: #6a0dad">Vector b</h5>
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+                {% for field in vector_b_fields %}
+                <div>
+                    {{ field }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group" style="margin-top: 20px;">
+        <label for="tol">Dispersion:</label>
+        {{ form.tol }}
+    </div>
+
+    <div class="form-group">
+        <label for="niter">Maximun iterations</label>
+        {{ form.niter }}
+    </div>
+
+    <div class="form-group">
+      <label for="error_type">Error type:</label>
+      {{ form.error_type }}
+    </div>
+
+    <button type="submit" class="submit-btn">Calcular</button>
+</form>
+{% endblock %}
+
+{% block graph %}
+{% if graph %}
+<img src="data:image/png;base64,{{ graph }}" alt="Graph of Gauss Results" style="width: 100%; max-width: 600px;">
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+	function generateMatrixFields(size) {
+			const matrixContainer = document.getElementById('matrix_inputs');
+			matrixContainer.innerHTML = ''; // Limpiar contenido anterior
+
+			// Crear contenedor de Matriz A
+			const matrixA = document.createElement('div');
+			matrixA.style.border = "2px solid rgba(54, 99, 233, 0.6)";
+			matrixA.style.padding = "10px";
+			matrixA.style.backgroundColor = "rgba(54, 99, 233, 0.1)";
+			matrixA.style.borderRadius = "5px";
+			matrixA.style.flexGrow = "1";
+
+			const matrixTitle = document.createElement('h5');
+			matrixTitle.style.textAlign = "center";
+			matrixTitle.style.color = "#6a0dad";
+			matrixTitle.innerText = "Matrix A";
+			matrixA.appendChild(matrixTitle);
+
+			for (let i = 0; i < size; i++) {
+					const row = document.createElement('div');
+					row.style.display = "flex";
+					row.style.justifyContent = "center";
+					row.style.gap = "7px";
+					row.style.marginTop = "10px";
+					row.style.marginBottom = "10px";
+
+					for (let j = 0; j < size; j++) {
+							const input = document.createElement('input');
+							input.type = 'number';
+							input.name = `A_${i}_${j}`;
+							input.placeholder = `A[${i + 1}][${j + 1}]`;
+							input.style.textAlign = "end";
+							input.style.fontSize = "15px";
+							input.style.width = "64px";
+							input.style.height = "45px";
+							input.style.border = "2px solid rgba(54, 99, 233, 0.5)";
+							row.appendChild(input);
+					}
+					matrixA.appendChild(row);
+			}
+			matrixContainer.appendChild(matrixA);
+
+			// Crear contenedor de Vector b
+			const vectorB = document.createElement('div');
+			vectorB.style.border = "2px solid yellow";
+			vectorB.style.padding = "10px";
+			vectorB.style.backgroundColor = "rgba(220, 205, 67, 0.1)";
+			vectorB.style.borderRadius = "5px";
+
+			const vectorBTitle = document.createElement('h5');
+			vectorBTitle.style.textAlign = "center";
+			vectorBTitle.style.color = "#6a0dad";
+			vectorBTitle.innerText = "Vector b";
+			vectorB.appendChild(vectorBTitle);
+
+			for (let i = 0; i < size; i++) {
+					const input = document.createElement('input');
+					input.type = 'number';
+					input.name = `b_${i}`;
+					input.placeholder = `b[${i + 1}]`;
+					input.style.display = "flex";
+					input.style.textAlign = "end";
+					input.style.fontSize = "15px";
+					input.style.width = "64px";
+					input.style.height = "45px";
+					input.style.border = "2px solid rgba(220, 205, 67, 0.4)";
+					input.style.marginTop = "10px";
+					input.style.marginBottom = "10px";
+					vectorB.appendChild(input);
+			}
+			matrixContainer.appendChild(vectorB);
+	}
+
+	// Detectar cambios en el tamaño de la matriz
+	document.getElementById('id_matrix_size').addEventListener('change', function () {
+			const size = parseInt(this.value);
+			generateMatrixFields(size);
+	});
+
+	// Inicializar campos al cargar la página
+	document.addEventListener('DOMContentLoaded', function () {
+			const initialSize = parseInt(document.getElementById('id_matrix_size').value);
+			generateMatrixFields(initialSize);
+	});
+</script>
+{% endblock %}

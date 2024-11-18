@@ -558,3 +558,88 @@ def simple_gauss(a, b, tol, niter, err_type="abs"):
             return solutions, errors, x, iteration
 
     return solutions, errors, None, iteration  # Si no converge
+
+def pivoteo_parcial(a, b, tol=1e-15, niter=100, err_type="abs"):
+    """
+    Método de Gauss con pivoteo parcial para resolver sistemas de ecuaciones lineales.
+
+    Parámetros:
+    - a: Matriz de coeficientes (numpy array).
+    - b: Vector de términos independientes (numpy array).
+    - tol: Tolerancia para el criterio de parada.
+    - niter: Número máximo de iteraciones.
+    - err_type: Tipo de error ("abs" para absoluto, "rel" para relativo).
+
+    Retorna:
+    - solutions: Lista con los estados de la matriz aumentada en cada paso.
+    - errors: Lista con los errores calculados en cada iteración.
+    - approximation: Vector solución aproximado o None si no converge.
+    - iterations: Número de iteraciones realizadas.
+    """
+    # Validaciones iniciales
+    a = np.array(a, dtype=float)
+    b = np.array(b, dtype=float).reshape(-1, 1)  # Asegurar que b sea columna
+    n = len(b)
+
+    if a.shape[0] != a.shape[1] or a.shape[0] != b.shape[0]:
+        raise ValueError("La matriz de coeficientes debe ser cuadrada y compatible con el vector b.")
+
+    # Matriz aumentada
+    ab = np.hstack((a, b))
+    solutions = []
+    errors = []
+
+    def forward_elimination(ab):
+        """Realiza la eliminación hacia adelante con pivoteo parcial."""
+        for k in range(n - 1):
+            # Pivoteo parcial
+            max_index = np.argmax(np.abs(ab[k:, k])) + k
+            if max_index != k:
+                ab[[k, max_index]] = ab[[max_index, k]]  # Intercambio de filas
+
+            # Eliminación hacia adelante
+            for i in range(k + 1, n):
+                if abs(ab[k, k]) < tol:
+                    raise ValueError("Cero en la diagonal, no se puede resolver con pivoteo parcial.")
+                multiplicador = ab[i, k] / ab[k, k]
+                ab[i, k:] -= multiplicador * ab[k, k:]
+
+            solutions.append(ab.copy())  # Guardar estado de la matriz
+        return ab
+
+    def back_substitution(ab):
+        """Realiza la sustitución hacia atrás para encontrar la solución."""
+        x = np.zeros(n)
+        for i in range(n - 1, -1, -1):
+            suma = np.sum(ab[i, i + 1:n] * x[i + 1:n])
+            x[i] = (ab[i, -1] - suma) / ab[i, i]
+        return x
+
+    def calculate_errors(a, b, x, err_type):
+        """Calcula errores iterativos."""
+        if err_type == "abs":
+            return np.max(np.abs(b - np.dot(a, x.reshape(-1, 1))))
+        elif err_type == "rel":
+            return np.max(np.abs((b - np.dot(a, x.reshape(-1, 1))) / (b + np.finfo(float).eps)))
+        else:
+            raise ValueError("Tipo de error no válido. Use 'abs' o 'rel'.")
+
+    # Eliminación hacia adelante
+    ab = forward_elimination(ab)
+
+    # Sustitución hacia atrás
+    x = back_substitution(ab)
+
+    # Cálculo de errores iterativos
+    iteration = 0
+    for _ in range(niter):
+        iteration += 1
+        error = calculate_errors(a, b, x, err_type)
+        errors.append(error)
+
+        # Verificar tolerancia
+        if error <= tol:
+            return solutions, errors, x, iteration
+
+    # Si no converge
+    return solutions, errors, None, iteration

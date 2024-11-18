@@ -29,4 +29,5 @@ urlpatterns = [
     path('multipleroots/', include('Methods.MultipleRoots.urls')),
     path('jacobi/', include('Methods.Jacobi.urls')),
     path('simplegauss/', include('Methods.SimpleGauss.urls')),
+    path('gpartialpivot/', include('Methods.GPartialPivot.urls')),
 ]

@@ -153,3 +153,43 @@ def generate_solution_graph(solutions, b):
     img_base64 = base64.b64encode(buf.read()).decode("utf-8")
 
     return img_base64
+
+def plot_gauss_pivoteo(solutions, errors, vector_b):
+    """
+    Genera gráficos para el método de Gauss con pivoteo parcial.
+
+    Parámetros:
+    - solutions: Lista con los estados de la matriz aumentada en cada paso.
+    - errors: Lista de errores calculados en cada iteración.
+    - vector_b: Vector de términos independientes.
+
+    Retorna:
+    - img_base64: Gráfica en formato Base64 para ser usada en la vista.
+    """
+    fig, axs = plt.subplots(2, 1, figsize=(10, 8))
+    plt.tight_layout(pad=5)
+
+    # Subplot 1: Gráfico de errores
+    axs[0].plot(range(1, len(errors) + 1), errors, marker='o', linestyle='-')
+    axs[0].set_title('Error vs Iteraciones')
+    axs[0].set_xlabel('Iteraciones')
+    axs[0].set_ylabel('Error')
+    axs[0].grid(True)
+
+    # Subplot 2: Estado de las matrices aumentadas
+    for idx, sol in enumerate(solutions):
+        axs[1].imshow(sol, cmap='viridis', aspect='auto')
+        axs[1].set_title('Estado de la matriz aumentada (Última iteración)')
+        axs[1].set_xlabel('Columnas (Incluye b)')
+        axs[1].set_ylabel('Filas')
+        break  # Solo mostrar la última matriz aumentada
+
+    # Guardar la figura como una imagen Base64
+    buf = BytesIO()
+    plt.savefig(buf, format="png")
+    buf.seek(0)
+    img_base64 = base64.b64encode(buf.getvalue()).decode('utf-8')
+    buf.close()
+
+    plt.close(fig)
+    return img_base64

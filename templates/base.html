@@ -62,7 +62,7 @@
 								</div>
 								<div class="dropdown-column">
 									<h3>Interpolation</h3>
-									<a href="#">Gauss With Partial Pivoting</a>
+									<a href="{% url 'partial_pivot' %}">Gauss With Partial Pivoting</a>
 									<a href="#">LU Factorization from Gauss</a>
 									<a href="#">Cholesky's Method</a>
 								</div>
@@ -160,13 +160,33 @@
 						{% elif solutions is not None %}
 							<div class="results-section glass-container">
 								<h2>Results</h2>
-								<div class="result-content">
-									<p><span class="function-value">The solutions for the system of equations are:</span></p>
-									{% for solution in solutions %}
-										<p class="solution-value">{{ solution }}</p>
-									{% endfor %}
+								{% if approximation is not none %}
+									<div class="result-content">
+										<div class="solution-container">
+											<h3>Solution</h3>
+											<p>The solution to the system is:</p>
+											<div class="solution-vector">
+													<table>
+															<tbody>
+																	{% for value in approximation %}
+																	<tr>
+																			<td>x{{ forloop.counter }} = {{ value|floatformat:4 }}</td>
+																	</tr>
+																	{% endfor %}
+															</tbody>
+													</table>
+											</div>
+									</div>
+									</div>
+								{% else %}
+									<div class="result-content">
+										<p><span class="function-value">The solutions for the system of equations are:</span></p>
+										{% for solution in solutions %}
+											<p class="solution-value">{{ solution }}</p>
+										{% endfor %}
+									</div>
 								</div>
-							</div>
+							{% endif %}
 						{% endif %}
 						{% if graph %}
 							<div class="result-graph-container">

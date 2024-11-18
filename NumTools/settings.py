@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'Methods.MultipleRoots',
     'Methods.Jacobi',
     'Methods.SimpleGauss',
+    'Methods.GPartialPivot',
 ]
 
 MIDDLEWARE = [
