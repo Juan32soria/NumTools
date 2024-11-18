@@ -13,7 +13,6 @@
 <ol>
     <li>Ensure the function \( g(x) \) is continuous and differentiable within the interval of interest.</li>
     <li>Provide a valid initial guess \( x_0 \), tolerance, and maximum number of iterations.</li>
-    <li>If \( g(x) \) is not provided, it will be generated automatically, and the best \( g(x) \) will be selected based on the convergence criteria.</li>
 </ol>
 {% endblock %}
 
@@ -39,43 +38,36 @@ Precision: 4 decimal places</code></pre>
 {% endblock %}
 
 {% block table %}
-{% if root is not None %}
-	{% if table %}
-		<div class="table-container">
-			<h3>Iteration Table</h3>
-			<table class="iteration-table">
-				<thead>
-					<tr>
-						<th>Iteration</th>
-						<th>x_n</th>
-						<th>x_n+1</th>
-						<th>{{ error_type }}</th>
-					</tr>
-				</thead>
-				<tbody>
-					{% for row in table %}
+	{% if root is not None %}
+		{% if table %}
+			<div class="table-container">
+				<h3>Iteration Table</h3>
+				<table class="iteration-table">
+					<thead>
 						<tr>
-							<td>{{ row.iteration }}</td>
-							<td>{{ row.x_n }}</td>
-							<td>{{ row.x_next }}</td>
-							<td>{{ row.error }}</td>
+							<th>Iteration</th>
+							<th>x_n</th>
+							<th>x_n+1</th>
+							<th>{{ error_type }}</th>
 						</tr>
-					{% endfor %}
-				</tbody>
-			</table>
-		</div>
+					</thead>
+					<tbody>
+						{% for row in table %}
+							<tr>
+								<td>{{ row.iteration }}</td>
+								<td>{{ row.x_n }}</td>
+								<td>{{ row.x_next }}</td>
+								<td>{{ row.error }}</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		{% endif %}
 	{% endif %}
-{% endif %}
-{% if msg %}
-	<div class="generated-options">
-		<h3>Generated \( g(x) \)</h3>
-		<p><strong>Best Option:</strong> {{ msg.generated_gx }}</p>
-		<p><strong>Other Options:</strong> {{ msg.other_options|join:", " }}</p>
-	</div>
-{% endif %}
-{% if error %}
-	<p style="color: red;">{{ error }}</p>
-{% endif %}
+	{% if error %}
+		<p style="color: red;">{{ error }}</p>
+	{% endif %}
 {% endblock %}
 
 {% block form %}

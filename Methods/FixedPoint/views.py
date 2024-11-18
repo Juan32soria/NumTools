@@ -19,28 +19,8 @@ def fixed_point_view(request):
             precision_value = form.cleaned_data['precision_value']
 
             try:
-                # Si no se proporciona g(x), generarlo automáticamente
-                if not gx:
-                    interval = (xo - 1, xo + 1)  # Intervalo alrededor de xo
-                    gx_data = nm.generate_gx(fx, interval)
-
-                    if "error" in gx_data:
-                        # Si no se pudo generar g(x), añadir mensaje de error
-                        context = {
-                            'form': form,
-                            'msg': [gx_data["error"]],
-                        }
-                        return render(request, 'fixed_point.html', context)
-
-                    # Agregar g(x) y opciones al contexto
-                    gx = gx_data["best_g"]
-                    context['msg'] = [
-                        f'Generated g(x): {gx_data["best_g"]}',
-                        f'Other options: {", ".join(gx_data["options"])}',
-                    ]
-
                 # Ejecutar el método de punto fijo
-                result = nm.fixed_point_method(gx, xo, tol, niter, precision_value)
+                result = nm.fixed_point_method(gx, xo, tol, niter, precision_value, precision_type, rs.to_math)
 
                 # Definir el tipo de error
                 error_type = 'Relative Error' if precision_type == 'significant_figures' else 'Absolute Error'
@@ -63,7 +43,7 @@ def fixed_point_view(request):
                         ]
 
                 # Generar gráfico de g(x) para el rango dado
-                img_base64 = rs.generate_graph(xo - 2, xo + 2, gx, result['approximation'])
+                img_base64 = rs.generate_graph(xo - 20, xo + 20, fx, result['approximation'])
 
                 # Crear el contexto con los resultados
                 context = {

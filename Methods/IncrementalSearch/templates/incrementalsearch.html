@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}Incremental Search{% endblock %}
+
+{% block header %}Incremental Search Method{% endblock %}
+
+{% block description %}
+<p>The incremental search method is used to find intervals containing roots by evaluating a function over a specified range with a constant step size.</p>
+{% endblock %}
+
+{% block help %}
+<p>To use the incremental search method:</p>
+<ul>
+	<li>Ensure the function is continuous over the interval.</li>
+	<li>Provide an initial value (x₀) to start the search.</li>
+	<li>Define a step size (Δx) to incrementally move through the range.</li>
+	<li>Set a maximum number of iterations to prevent infinite loops.</li>
+</ul>
+{% endblock %}
+
+{% block syntax %}
+<p>The general syntax for the incremental search method is:</p>
+<pre><code>incremental_search(f, x0, delta_x, max_iter)</code></pre>
+<p>Where:</p>
+<ul>
+	<li><strong>f</strong>: The function for which we want to find intervals containing roots.</li>
+	<li><strong>x0</strong>: The initial value to start the search.</li>
+	<li><strong>delta_x</strong>: The step size for the search.</li>
+	<li><strong>max_iter</strong>: The maximum number of iterations.</li>
+</ul>
+{% endblock %}
+
+{% block examples %}
+<p>Example: To find intervals containing roots of f(x) = x^2 - 4 starting from x₀ = 0 with Δx = 0.5</p>
+<pre><code>Function: x^2 - 4
+Initial value: x₀ = 0
+Step size: Δx = 0.5
+Max Iterations: 100</code></pre>
+{% endblock %}
+
+{% block table %}
+{% if intervals %}
+<div class="table-container">
+	<h3>Intervals with Sign Change</h3>
+	<table class="iteration-table">
+		<thead>
+			<tr>
+				<th>Interval Start</th>
+				<th>Interval End</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for interval in intervals %}
+				<tr>
+					<td>{{ interval.0 }}</td>
+					<td>{{ interval.1 }}</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<h3>Function Evaluations</h3>
+	<table class="iteration-table">
+		<thead>
+			<tr>
+				<th>Iteration</th>
+				<th>x</th>
+				<th>f(x)</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for row in table %}
+				<tr>
+					<td>{{ row.steps }}</td>
+					<td>{{ row.x }}</td>
+					<td>{{ row.fx_n }}</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block form %}
+<form method="POST" action="{% url 'incremental_search' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="submit-btn">Calculate</button>
+</form>
+{% endblock %}
+
+{% block graph %}
+<img src="data:image/png;base64,{{ graph }}" id="functionGraph" alt="Graph of f(x)">
+{% endblock %}

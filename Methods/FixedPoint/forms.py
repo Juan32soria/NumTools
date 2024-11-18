@@ -5,7 +5,7 @@ class FixedPointForm(forms.Form):
         label="Function f(x)",
         max_length=200,
         widget=forms.TextInput(
-            attrs={"placeholder": "x**3 - x - 2", "class": "form-control"}
+            attrs={"placeholder": "cos(x)-x", "class": "form-control"}
         ),
 	)
 
@@ -13,7 +13,7 @@ class FixedPointForm(forms.Form):
         label="Function g(x)",
         max_length=200,
         widget=forms.TextInput(
-            attrs={"placeholder": "Leave empty to use one automatically generated", "class": "form-control"}
+            attrs={"placeholder": "cos(x)", "class":"form-control"}
         ),
 	)
 

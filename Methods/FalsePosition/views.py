@@ -10,7 +10,7 @@ def false_position_view(request):
         form = FalsePositionForm(request.POST)
         if form.is_valid():
             # Obtener los datos del formulario
-            fun = form.cleaned_data['fun'].replace('^', '**')
+            fun = form.cleaned_data['fun'].replace('^', '**').replace(' ', '')
             xi = form.cleaned_data['xi']
             xs = form.cleaned_data['xs']
             tol = form.cleaned_data['tol']
@@ -19,9 +19,7 @@ def false_position_view(request):
             precision_value = form.cleaned_data['precision_value']
 
             try:
-                # Reemplazar '^' con '**' para la sintaxis de potencia en Python
-                fun = fun.replace(' ', '')
-                # Ejecutar el método de bisección
+                # Ejecutar el método de la falsa posición
                 fm, error, root, iterations = nm.falseposition_method(xi, xs, tol, niter, fun, rs.to_math)
                 # Definir el tipo de error a mostrar en la tabla
                 error_type = 'Relative Error' if precision_type == 'significant_figures' else 'Absolute Error'

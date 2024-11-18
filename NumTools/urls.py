@@ -23,4 +23,5 @@ urlpatterns = [
     path('bisection/', include('Methods.Bisection.urls')),
     path('false_position/', include('Methods.FalsePosition.urls')),
     path('fixed_point/', include('Methods.FixedPoint.urls')),
+    path('incremental_search/', include('Methods.IncrementalSearch.urls')),
 ]

@@ -46,7 +46,7 @@
 							<div class="dropdown-grid">
 								<div class="dropdown-column">
 									<h3>Variable's Ecuations'</h3>
-									<a href="#">Incremental Searches</a>
+									<a href="{% url 'incremental_search' %}">Incremental Searches</a>
 									<a href="{% url 'bisection' %}">Bisection</a>
 									<a href="{% url 'false_position' %}">False Position</a>
 									<a href="{% url 'fixed_point' %}">Fixed Point</a>
@@ -147,12 +147,25 @@
 									<p>The approximate root for: <span class="function-value">{{ fx }}</span> is</p>
 									<p class="root-value">{{ root }}</p>
 								</div>
-								{% if graph %}
-									<div class="result-graph-container">
-										<h3>Function Graph</h3>
-										{% block graph %}{% endblock %}
-									</div>
-								{% endif %}
+						{% elif intervals is not None %}
+							<div class="results-section glass-container">
+								<h2>Results</h2>
+								<div class="result-content">
+									<p>The approximate interval for the function: <span class="function-value">{{ fx }}</span> is</p>
+									{% for interval in intervals %}
+										<p class="interval-value">{{ interval }}</p>
+									{% endfor %}
+								</div>
+							</div>
+						{% endif %}
+						{% if graph %}
+							<div class="result-graph-container">
+								<h3>Function Graph</h3>
+								{% block graph %}{% endblock %}
+							</div>
+						{% else %}
+							<div class="result-graph-container">
+								{% block graphnt %}{% endblock %}
 							</div>
 						{% endif %}
 					</div>

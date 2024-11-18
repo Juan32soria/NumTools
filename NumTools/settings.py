@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'Methods.Bisection',
     'Methods.FalsePosition',
     'Methods.FixedPoint',
+    'Methods.IncrementalSearch',
 ]
 
 MIDDLEWARE = [
