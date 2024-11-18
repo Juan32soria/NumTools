@@ -26,4 +26,5 @@ urlpatterns = [
     path('incremental_search/', include('Methods.IncrementalSearch.urls')),
     path('secant/', include('Methods.Secant.urls')),
     path('newton/', include('Methods.Newton.urls')),
+    path('multipleroots/', include('Methods.MultipleRoots.urls')),
 ]

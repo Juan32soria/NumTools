@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Multiple Roots{% endblock %}
+
+{% block header %}Multiple Roots Method{% endblock %}
+
+{% block description %}
+<p>The multiple roots method is a numerical algorithm used to approximate the root of a function that has a multiple root, utilizing the function, its first derivative, and its second derivative for better convergence.</p>
+{% endblock %}
+
+{% block help %}
+<p>To use the multiple roots method:</p>
+<ol>
+    <li>Define the function \( f(x) \), its first derivative \( f'(x) \), and its second derivative \( f''(x) \).</li>
+    <li>Provide an initial guess \( x_0 \), the tolerance, and the maximum number of iterations.</li>
+    <li>The method uses these derivatives to improve convergence when the root is a multiple root.</li>
+</ol>
+{% endblock %}
+
+{% block syntax %}
+<p>The general syntax for the multiple roots method is:</p>
+<pre><code>multiple_roots(f, df1, df2, x0, tol, max_iter)</code></pre>
+<p>Where:</p>
+<ul>
+    <li><strong>f:</strong> The function for which we want to find the root.</li>
+    <li><strong>df1:</strong> The first derivative of the function.</li>
+    <li><strong>df2:</strong> The second derivative of the function.</li>
+    <li><strong>x0:</strong> The initial guess.</li>
+    <li><strong>tol:</strong> The tolerance (stopping criterion).</li>
+    <li><strong>max_iter:</strong> The maximum number of iterations.</li>
+</ul>
+{% endblock %}
+
+{% block examples %}
+<p>Example: To find the root of \( f(x) = x^3 - 2x^2 + x \) using its first and second derivatives:</p>
+<pre><code>Function: x**3 - 2*x**2 + x
+First Derivative: 3*x**2 - 4*x + 1
+Second Derivative: 6*x - 4
+Initial Guess: 1.5
+Tolerance: 0.0001
+Max Iterations: 100
+Precision: 4 decimal places</code></pre>
+{% endblock %}
+
+{% block table %}
+{% if root is not None %}
+    {% if table %}
+        <div class="table-container">
+            <h3>Iteration Table</h3>
+            <table class="iteration-table">
+                <thead>
+                    <tr>
+                        <th>Iteration</th>
+                        <th>x_n</th>
+                        <th>f(x_n)</th>
+                        <th>{{ error_type }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in table %}
+                        <tr>
+                            <td>{{ row.iteration }}</td>
+                            <td>{{ row.x_n }}</td>
+                            <td>{{ row.fx_n }}</td>
+                            <td>{{ row.error }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+{% endif %}
+{% endblock %}
+
+{% block form %}
+<form method="POST" action="{% url 'multipleroots' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="submit-btn">Calculate</button>
+</form>
+{% endblock %}
+
+{% block graph %}
+<img src="data:image/png;base64,{{ graph }}" id="functionGraph" alt="Graph of f(x)">
+{% endblock %}

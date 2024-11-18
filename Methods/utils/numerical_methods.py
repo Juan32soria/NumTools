@@ -364,3 +364,81 @@ def newton_method(f, df, x0, tol, niter, to_math):
     else:
         # Si se alcanzó el máximo de iteraciones sin convergencia, devolver los resultados obtenidos.
         return fx_values, error, x_values, x0, niter
+
+def multipleroots_method(x0, fun, df1, df2, tol, niter, to_math):
+    """
+    Método de raíces múltiples para encontrar la raíz de una función.
+    
+    Parámetros:
+    - x0: Valor inicial.
+    - fun: Función a evaluar como cadena (string).
+    - df1: Primera derivada de la función como cadena (string).
+    - df2: Segunda derivada de la función como cadena (string).
+    - tol: Tolerancia para el error absoluto.
+    - niter: Número máximo de iteraciones permitidas.
+    - to_math: Diccionario con funciones matemáticas seguras.
+
+    Retorna:
+    - fm: Lista con los valores de la función en cada iteración.
+    - error: Lista con los errores absolutos en cada iteración.
+    - x_values: Lista con los valores de x en cada iteración.
+    - x: Valor aproximado de la raíz.
+    - c: Número de iteraciones realizadas.
+    """
+    # Inicializar listas para almacenar los valores de la función, errores y x.
+    fm = []  # Lista para valores de f(x) en cada iteración.
+    error = []  # Lista para errores absolutos en cada iteración.
+    x_values = [x0]  # Lista para almacenar los valores de x.
+
+    # Evaluar las funciones en el valor inicial x0.
+    f = eval(fun, {"x": x0, "math": math}, to_math)  # f(x0)
+    df1_val = eval(df1, {"x": x0, "math": math}, to_math)  # f'(x0)
+    df2_val = eval(df2, {"x": x0, "math": math}, to_math)  # f''(x0)
+
+    # Comprobar si el valor inicial es una raíz.
+    if f == 0:
+        return [], [], [x0], x0, 0  # x0 es la raíz exacta.
+
+    # Inicializar el contador de iteraciones y el error inicial.
+    c = 0  # Contador de iteraciones.
+    error.append(100)  # Inicializar el error con un valor alto.
+
+    # Iterar mientras el error sea mayor que la tolerancia, no se alcance una raíz exacta,
+    # y no se supere el número máximo de iteraciones.
+    while error[c] > tol and f != 0 and df1_val != 0 and c < niter:
+        # Calcular el denominador: f'(x)^2 - f(x) * f''(x).
+        denominator = df1_val ** 2 - f * df2_val
+        if denominator == 0:
+            # Si el denominador es 0, la raíz es múltiple o el método falla.
+            return fm, error, x_values, None, c
+
+        # Calcular el siguiente valor de x.
+        x1 = x0 - (f * df1_val) / denominator
+
+        # Calcular el error absoluto.
+        abs_error = abs(x1 - x0)
+        error.append(abs_error)  # Guardar el error en la lista.
+
+        # Evaluar las funciones en el nuevo valor x1.
+        f = eval(fun, {"x": x1, "math": math}, to_math)  # f(x1)
+        df1_val = eval(df1, {"x": x1, "math": math}, to_math)  # f'(x1)
+        df2_val = eval(df2, {"x": x1, "math": math}, to_math)  # f''(x1)
+
+        # Guardar los valores de la función y x en las listas.
+        fm.append(f)  # Guardar el valor de f(x1).
+        x_values.append(x1)  # Guardar el nuevo valor de x.
+
+        # Actualizar x0 para la siguiente iteración.
+        x0 = x1
+        c += 1  # Incrementar el contador de iteraciones.
+
+    # Verificar las condiciones de parada.
+    if f == 0:
+        # Si f(x) = 0, x es una raíz exacta.
+        return fm, error, x_values, x1, c
+    elif error[-1] < tol:
+        # Si el error es menor que la tolerancia, x1 es una aproximación de la raíz.
+        return fm, error, x_values, x1, c
+    else:
+        # Si se alcanzó el máximo de iteraciones sin convergencia, devolver los resultados obtenidos.
+        return fm, error, x_values, None, c
