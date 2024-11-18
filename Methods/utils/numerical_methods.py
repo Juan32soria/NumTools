@@ -615,3 +615,122 @@ def gauss_seidel(a, b, tol, niter, err_type="abs"):
         return solutions, errors, x, iteration
     else:
         return solutions, errors, None, iteration  # Si no converge
+
+def lu(a, b, tol, niter, err_type="abs"):
+    """
+    Método de descomposición LU para resolver sistemas de ecuaciones lineales.
+
+    Parámetros:
+    - a : Matriz de coeficientes (numpy array).
+    - b: Vector de términos independientes (numpy array).
+    - tol: Tolerancia para el criterio de parada.
+    - niter: Número máximo de iteraciones.
+    - err_type: Tipo de error ("abs" para absoluto, "rel" para relativo).
+
+    Retorna:
+    - solutions: Lista con los vectores solución en cada iteración.
+    - errors: Lista con los errores calculados en cada iteración.
+    - approximation: Vector solución aproximado o None si no converge.
+    - iterations: Número de iteraciones realizadas.
+    """
+    a = np.array(a, dtype=float)
+    b = np.array(b, dtype=float)
+    n = len(b)
+
+    # Verificar que la matriz sea cuadrada
+    if a.shape[0] != a.shape[1]:
+        raise ValueError("La matriz A debe ser cuadrada.")
+    
+    # Inicialización
+    L, U = lu_factorization(a, n)
+    z = np.zeros(n)  # Vector auxiliar para sustitución progresiva
+    x = np.zeros(n)  # Vector solución inicial
+    solutions = [x.copy()]
+    errors = []
+    iteration = 0
+    dispersion = float("inf")
+
+    # Solución inicial usando sustitución progresiva y regresiva
+    z = progressive_substitution(L, b, n)
+    x_new = regressive_substitution(U, z, n)
+
+    while dispersion > tol and iteration < niter:
+        # Cálculo de errores
+        abs_error = np.max(np.abs(x_new - x))  # Error absoluto
+        rel_error = np.max(np.abs((x_new - x) / (x_new + np.finfo(float).eps)))  # Error relativo
+        error = abs_error if err_type == "abs" else rel_error
+        errors.append(error)
+
+        # Verificar dispersión
+        dispersion = error
+        solutions.append(x_new.copy())
+        x = x_new  # Actualizar el vector solución
+        iteration += 1
+
+    # Verificar convergencia
+    if dispersion <= tol:
+        return solutions, errors, x, iteration
+    else:
+        return solutions, errors, None, iteration  # Si no converge
+
+def lu_factorization(a, n):
+    """
+    Factorización LU: Calcula las matrices L y U para la matriz dada.
+
+    Parámetros:
+    - a : Matriz de coeficientes (numpy array).
+    - n : Tamaño de la matriz.
+
+    Retorna:
+    - L : Matriz inferior triangular.
+    - U : Matriz superior triangular.
+    """
+    L = np.zeros((n, n))
+    U = np.array(a, dtype=float)  # Copia de la matriz original para U
+
+    for k in range(n - 1):
+        for i in range(k + 1, n):
+            if U[k][k] == 0:
+                raise ValueError("Cero en la diagonal principal, no es posible calcular LU.")
+            multiplicador = U[i][k] / U[k][k]
+            L[i][k] = multiplicador
+            for j in range(k, n):
+                U[i][j] -= multiplicador * U[k][j]
+
+    # Llenar la diagonal de L con 1s
+    np.fill_diagonal(L, 1)
+    return L, U
+
+def progressive_substitution(L, b, n):
+    """
+    Sustitución progresiva para resolver Lz = b.
+
+    Parámetros:
+    - L : Matriz triangular inferior.
+    - b : Vector de términos independientes.
+    - n : Tamaño de la matriz.
+
+    Retorna:
+    - z : Vector solución intermedia.
+    """
+    z = np.zeros(n)
+    for i in range(n):
+        z[i] = (b[i] - np.dot(L[i, :i], z[:i])) / L[i, i]
+    return z
+
+def regressive_substitution(U, z, n):
+    """
+    Sustitución regresiva para resolver Ux = z.
+
+    Parámetros:
+    - U : Matriz triangular superior.
+    - z : Vector solución intermedia.
+    - n : Tamaño de la matriz.
+
+    Retorna:
+    - x : Vector solución final.
+    """
+    x = np.zeros(n)
+    for i in range(n - 1, -1, -1):
+        x[i] = (z[i] - np.dot(U[i, i + 1:], x[i + 1:])) / U[i, i]
+    return x

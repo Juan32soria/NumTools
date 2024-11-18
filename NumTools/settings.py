@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'Methods.Jacobi',
     'Methods.SimpleGauss',
     'Methods.GaussSeidel',
+    'Methods.LU',
 ]
 
 MIDDLEWARE = [
