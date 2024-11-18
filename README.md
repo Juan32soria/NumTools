@@ -19,6 +19,7 @@ Welcome to the *Numerical Methods Toolkit* – a web-based platform for explorin
   - LU Factorization
   - Jacobi Method
   - Gauss-Seidel Method
+  - Cholesky Method
 
 ### 🎨 Interactive Visualizations
 - Dynamic graphing of functions and iterative methods.
