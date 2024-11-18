@@ -19,6 +19,8 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('bisection/', include('Methods.Bisection.urls')),
     path('', include('core.urls')),
+    path('bisection/', include('Methods.Bisection.urls')),
+    path('false_position/', include('Methods.FalsePosition.urls')),
+    path('fixed_point/', include('Methods.FixedPoint.urls')),
 ]

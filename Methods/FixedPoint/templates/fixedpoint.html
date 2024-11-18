@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}Fixed Point{% endblock %}
+
+{% block header %}Fixed Point Method{% endblock %}
+
+{% block description %}
+<p>The Fixed Point method is an iterative numerical method to approximate the root of a function by rewriting it in the form \( x = g(x) \) and iterating \( x_{n+1} = g(x_n) \). Convergence is achieved if \( |g'(x)| < 1 \) within the interval.</p>
+{% endblock %}
+
+{% block help %}
+<p>To use the fixed point method:</p>
+<ol>
+    <li>Ensure the function \( g(x) \) is continuous and differentiable within the interval of interest.</li>
+    <li>Provide a valid initial guess \( x_0 \), tolerance, and maximum number of iterations.</li>
+    <li>If \( g(x) \) is not provided, it will be generated automatically, and the best \( g(x) \) will be selected based on the convergence criteria.</li>
+</ol>
+{% endblock %}
+
+{% block syntax %}
+<p>The general syntax for the fixed point method is:</p>
+<pre><code>fixed_point(g, x0, tol, max_iter)</code></pre>
+<p>Where:</p>
+<ul>
+	<li><strong>g:</strong> The transformation function (derived from \( f(x) \)).</li>
+	<li><strong>x0:</strong> The initial guess.</li>
+	<li><strong>tol:</strong> The tolerance (stopping criterion).</li>
+	<li><strong>max_iter:</strong> The maximum number of iterations.</li>
+</ul>
+{% endblock %}
+
+{% block examples %}
+<p>Example: To approximate the root of \( f(x) = x^3 - x - 1 \) using \( g(x) = x + (x^3 - x - 1) / 3 \):</p>
+<pre><code>Function: x^3 - x - 1
+Initial Guess: 1.5
+Tolerance: 0.0001
+Max Iterations: 100
+Precision: 4 decimal places</code></pre>
+{% endblock %}
+
+{% block table %}
+{% if root is not None %}
+	{% if table %}
+		<div class="table-container">
+			<h3>Iteration Table</h3>
+			<table class="iteration-table">
+				<thead>
+					<tr>
+						<th>Iteration</th>
+						<th>x_n</th>
+						<th>x_n+1</th>
+						<th>{{ error_type }}</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for row in table %}
+						<tr>
+							<td>{{ row.iteration }}</td>
+							<td>{{ row.x_n }}</td>
+							<td>{{ row.x_next }}</td>
+							<td>{{ row.error }}</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	{% endif %}
+{% endif %}
+{% if msg %}
+	<div class="generated-options">
+		<h3>Generated \( g(x) \)</h3>
+		<p><strong>Best Option:</strong> {{ msg.generated_gx }}</p>
+		<p><strong>Other Options:</strong> {{ msg.other_options|join:", " }}</p>
+	</div>
+{% endif %}
+{% if error %}
+	<p style="color: red;">{{ error }}</p>
+{% endif %}
+{% endblock %}
+
+{% block form %}
+<form method="POST" action="{% url 'fixed_point' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="submit-btn">Calculate</button>
+</form>
+{% endblock %}
+
+{% block graph %}
+{% if graph %}
+	<img src="data:image/png;base64,{{ graph }}" id="functionGraph" alt="Graph of g(x)">
+{% endif %}
+{% endblock %}

@@ -1,6 +1,6 @@
 from django import forms
 
-class BisectionForm(forms.Form):
+class FalsePositionForm(forms.Form):
     fun = forms.CharField(
         label="Function f(x)",
         max_length=200,

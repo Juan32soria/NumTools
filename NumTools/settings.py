@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'core',
     'Methods.Bisection',
-    
+    'Methods.FalsePosition',
+    'Methods.FixedPoint',
 ]
 
 MIDDLEWARE = [

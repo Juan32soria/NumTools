@@ -45,17 +45,26 @@
 						<div class="dropdown-content">
 							<div class="dropdown-grid">
 								<div class="dropdown-column">
-									<h3>Open Methods</h3>
+									<h3>Variable's Ecuations'</h3>
+									<a href="#">Incremental Searches</a>
 									<a href="{% url 'bisection' %}">Bisection</a>
+									<a href="{% url 'false_position' %}">False Position</a>
+									<a href="{% url 'fixed_point' %}">Fixed Point</a>
 									<a href="#">Newton-Raphson</a>
 									<a href="#">Secant</a>
-									<a href="#">Fixed Point</a>
+									<a href="#">Multiple Roots</a>
 								</div>
 								<div class="dropdown-column">
-									<h3>Closed Methods</h3>
-									<a href="#">Regula Falsi</a>
-									<a href="#">Müller</a>
-									<a href="#">Bairstow</a>
+									<h3>System Ecuations Solutions</h3>
+									<a href="#">Simple Gauss Elimination</a>
+									<a href="#">Gauss-Seidel Method</a>
+									<a href="#">Jacobi's Method'</a>
+								</div>
+								<div class="dropdown-column">
+									<h3>Interpolation</h3>
+									<a href="#">Gauss With Partial Pivoting</a>
+									<a href="#">LU Factorization from Gauss</a>
+									<a href="#">Cholesky's Method</a>
 								</div>
 							</div>
 						</div>
@@ -97,6 +106,13 @@
 								<h2>Help</h2>
 								<div class="info-content">
 									{% block help %}{% endblock %}
+									<ol>
+										<li>The function must be continuous and differentiable; moreover, the specific function evaluated at the ends of the interval must have opposite signs.</li>
+										<li>The value of A must be less than B</li>
+										<li>The tolerance must have a positive value.</li>
+										<li>Both values, A and B, must exist within the function.</li>
+										<li>The number of iterations must be a positive value.</li>
+									</ol>
 								</div>
 							</div>
 							<!-- Syntax Section -->
@@ -104,6 +120,7 @@
 								<h2>Syntax</h2>
 								<div class="info-content">
 									{% block syntax %}{% endblock %}
+									<p><Strong>You can also use and acess more complex functions established in Python's math module'</Strong></p>
 								</div>
 							</div>
 							<!-- Examples Section -->
@@ -114,33 +131,7 @@
 								</div>
 							</div>
 						</div>
-						{% if root is not None %}
-							{% if table %}
-								<div class="table-container">
-									<h3>Iteration Table</h3>
-									<table class="iteration-table">
-										<thead>
-											<tr>
-												<th>Iteration</th>
-												<th>x_n</th>
-												<th>f(x_n)</th>
-												<th>{{ error_type }}</th>
-											</tr>
-										</thead>
-										<tbody>
-											{% for row in table %}
-												<tr>
-													<td>{{ row.iteration }}</td>
-													<td>{{ row.x_n }}</td>
-													<td>{{ row.fx_n }}</td>
-													<td>{{ row.error }}</td>
-												</tr>
-											{% endfor %}
-										</tbody>
-									</table>
-								</div>
-							{% endif %}
-						{% endif %}
+						{% block table %}{% endblock %}
 					</div>
 					<!-- Right Column -->
 					<div class="right-column">
@@ -153,7 +144,7 @@
 							<div class="results-section glass-container">
 								<h2>Results</h2>
 								<div class="result-content">
-									<p>The approximate root for: <span class="function-value">{{ fun }}</span> is</p>
+									<p>The approximate root for: <span class="function-value">{{ fx }}</span> is</p>
 									<p class="root-value">{{ root }}</p>
 								</div>
 								{% if graph %}

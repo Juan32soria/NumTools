@@ -8,7 +8,6 @@ def bisection_view(request):
     if request.method == 'POST':
         form = BisectionForm(request.POST)
         if form.is_valid():
-            print(form.errors)
             # Obtener los datos del formulario
             fun = form.cleaned_data['fun'].replace('^', '**')
             xi = form.cleaned_data['xi']
@@ -24,7 +23,7 @@ def bisection_view(request):
                 # Ejecutar el método de bisección
                 fm, error, root, iterations = nm.bisection_method(xi, xs, tol, n_iter, fun, rs.to_math)
                 # Definir el tipo de error a mostrar en la tabla
-                error_type = 'Error Relativo' if precision_type == 'significant_figures' else 'Error Absoluto'
+                error_type = 'Relative Error' if precision_type == 'significant_figures' else 'Absolute Error'
 
                 # Si se encuentra la raíz, ajustar con la precisión solicitada
                 if root is not None:
