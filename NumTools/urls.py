@@ -31,4 +31,5 @@ urlpatterns = [
     path('simplegauss/', include('Methods.SimpleGauss.urls')),
     path('gaussseidel/', include('Methods.GaussSeidel.urls')),
     path('lu/', include('Methods.LU.urls')),
+    path('cholesky/', include('Methods.Cholesky.urls')),
 ]

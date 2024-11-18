@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'Methods.SimpleGauss',
     'Methods.GaussSeidel',
     'Methods.LU',
+    'Methods.Cholesky',
 ]
 
 MIDDLEWARE = [
