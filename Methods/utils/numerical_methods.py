@@ -558,3 +558,60 @@ def simple_gauss(a, b, tol, niter, err_type="abs"):
             return solutions, errors, x, iteration
 
     return solutions, errors, None, iteration  # Si no converge
+
+def gauss_seidel(a, b, tol, niter, err_type="abs"):
+    """
+    Método de Gauss-Seidel para resolver sistemas de ecuaciones lineales.
+
+    Parámetros:
+    - a : Matriz de coeficientes (numpy array).
+    - b: Vector de términos independientes (numpy array).
+    - tol: Tolerancia para el criterio de parada.
+    - niter: Número máximo de iteraciones.
+    - err_type: Tipo de error ("abs" para absoluto, "rel" para relativo).
+
+    Retorna:
+    - solutions: Lista con los vectores solución en cada iteración.
+    - errors: Lista con los errores calculados en cada iteración.
+    - approximation: Vector solución aproximado o None si no converge.
+    - iterations: Número de iteraciones realizadas.
+    """
+    a = np.array(a, dtype=float)
+    b = np.array(b, dtype=float)
+    n = len(b)
+
+    # Verificar que la diagonal no tenga ceros
+    if np.any(np.diag(a) == 0):
+        raise ValueError("Cero en la diagonal principal, Gauss-Seidel no es aplicable.")
+
+    # Inicialización
+    x = np.zeros(n)  # Vector inicial de ceros
+    solutions = [x.copy()]
+    errors = []
+    iteration = 0
+    dispersion = float("inf")
+
+    # Iteración principal
+    while dispersion > tol and iteration < niter:
+        x_new = x.copy()
+        for i in range(n):
+            suma = np.dot(a[i, :], x_new) - a[i, i] * x_new[i]  # Suma con valores actualizados
+            x_new[i] = (b[i] - suma) / a[i, i]  # Actualización de x[i]
+
+        # Cálculo de errores
+        abs_error = np.max(np.abs(x_new - x))  # Error absoluto
+        rel_error = np.max(np.abs((x_new - x) / (x_new + np.finfo(float).eps)))  # Error relativo
+        error = abs_error if err_type == "abs" else rel_error
+        errors.append(error)
+
+        # Verificar dispersión
+        dispersion = error
+        solutions.append(x_new.copy())
+        x = x_new  # Actualizar el vector solución
+        iteration += 1
+
+    # Verificar convergencia
+    if dispersion <= tol:
+        return solutions, errors, x, iteration
+    else:
+        return solutions, errors, None, iteration  # Si no converge
