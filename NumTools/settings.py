@@ -48,6 +48,9 @@ INSTALLED_APPS = [
     'Methods.MultipleRoots',
     'Methods.Jacobi',
     'Methods.SimpleGauss',
+    'Methods.GaussSeidel',
+    'Methods.LU',
+    'Methods.Cholesky',
     'Methods.GPartialPivot',
 ]
 

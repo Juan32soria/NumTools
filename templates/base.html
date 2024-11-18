@@ -57,14 +57,14 @@
 								<div class="dropdown-column">
 									<h3>System Ecuations Solutions</h3>
 									<a href="{% url 'simplegauss' %}">Simple Gauss Elimination</a>
-									<a href="#">Gauss-Seidel Method</a>
+									<a href="{% url 'gaussseidel' %}">Gauss-Seidel Method</a>
 									<a href="{% url 'jacobi' %}">Jacobi's Method'</a>
 								</div>
 								<div class="dropdown-column">
 									<h3>Interpolation</h3>
 									<a href="{% url 'partial_pivot' %}">Gauss With Partial Pivoting</a>
-									<a href="#">LU Factorization from Gauss</a>
-									<a href="#">Cholesky's Method</a>
+									<a href="{% url 'lu' %}">LU Factorization from Gauss</a>
+									<a href="{% url 'cholesky' %}">Cholesky's Method</a>
 								</div>
 							</div>
 						</div>

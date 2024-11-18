@@ -559,6 +559,302 @@ def simple_gauss(a, b, tol, niter, err_type="abs"):
 
     return solutions, errors, None, iteration  # Si no converge
 
+def gauss_seidel(a, b, tol, niter, err_type="abs"):
+    """
+    Método de Gauss-Seidel para resolver sistemas de ecuaciones lineales.
+
+    Parámetros:
+    - a : Matriz de coeficientes (numpy array).
+    - b: Vector de términos independientes (numpy array).
+    - tol: Tolerancia para el criterio de parada.
+    - niter: Número máximo de iteraciones.
+    - err_type: Tipo de error ("abs" para absoluto, "rel" para relativo).
+
+    Retorna:
+    - solutions: Lista con los vectores solución en cada iteración.
+    - errors: Lista con los errores calculados en cada iteración.
+    - approximation: Vector solución aproximado o None si no converge.
+    - iterations: Número de iteraciones realizadas.
+    """
+    a = np.array(a, dtype=float)
+    b = np.array(b, dtype=float)
+    n = len(b)
+
+    # Verificar que la diagonal no tenga ceros
+    if np.any(np.diag(a) == 0):
+        raise ValueError("Cero en la diagonal principal, Gauss-Seidel no es aplicable.")
+
+    # Inicialización
+    x = np.zeros(n)  # Vector inicial de ceros
+    solutions = [x.copy()]
+    errors = []
+    iteration = 0
+    dispersion = float("inf")
+
+    # Iteración principal
+    while dispersion > tol and iteration < niter:
+        x_new = x.copy()
+        for i in range(n):
+            suma = np.dot(a[i, :], x_new) - a[i, i] * x_new[i]  # Suma con valores actualizados
+            x_new[i] = (b[i] - suma) / a[i, i]  # Actualización de x[i]
+
+        # Cálculo de errores
+        abs_error = np.max(np.abs(x_new - x))  # Error absoluto
+        rel_error = np.max(np.abs((x_new - x) / (x_new + np.finfo(float).eps)))  # Error relativo
+        error = abs_error if err_type == "abs" else rel_error
+        errors.append(error)
+
+        # Verificar dispersión
+        dispersion = error
+        solutions.append(x_new.copy())
+        x = x_new  # Actualizar el vector solución
+        iteration += 1
+
+    # Verificar convergencia
+    if dispersion <= tol:
+        return solutions, errors, x, iteration
+    else:
+        return solutions, errors, None, iteration  # Si no converge
+
+def lu(a, b, tol, niter, err_type="abs"):
+    """
+    Método de descomposición LU para resolver sistemas de ecuaciones lineales.
+
+    Parámetros:
+    - a : Matriz de coeficientes (numpy array).
+    - b: Vector de términos independientes (numpy array).
+    - tol: Tolerancia para el criterio de parada.
+    - niter: Número máximo de iteraciones.
+    - err_type: Tipo de error ("abs" para absoluto, "rel" para relativo).
+
+    Retorna:
+    - solutions: Lista con los vectores solución en cada iteración.
+    - errors: Lista con los errores calculados en cada iteración.
+    - approximation: Vector solución aproximado o None si no converge.
+    - iterations: Número de iteraciones realizadas.
+    """
+    a = np.array(a, dtype=float)
+    b = np.array(b, dtype=float)
+    n = len(b)
+
+    # Verificar que la matriz sea cuadrada
+    if a.shape[0] != a.shape[1]:
+        raise ValueError("La matriz A debe ser cuadrada.")
+    
+    # Inicialización
+    L, U = lu_factorization(a, n)
+    z = np.zeros(n)  # Vector auxiliar para sustitución progresiva
+    x = np.zeros(n)  # Vector solución inicial
+    solutions = [x.copy()]
+    errors = []
+    iteration = 0
+    dispersion = float("inf")
+
+    # Solución inicial usando sustitución progresiva y regresiva
+    z = lu_progressive_substitution(L, b, n)
+    x_new = lu_regressive_substitution(U, z, n)
+
+    while dispersion > tol and iteration < niter:
+        # Cálculo de errores
+        abs_error = np.max(np.abs(x_new - x))  # Error absoluto
+        rel_error = np.max(np.abs((x_new - x) / (x_new + np.finfo(float).eps)))  # Error relativo
+        error = abs_error if err_type == "abs" else rel_error
+        errors.append(error)
+
+        # Verificar dispersión
+        dispersion = error
+        solutions.append(x_new.copy())
+        x = x_new  # Actualizar el vector solución
+        iteration += 1
+
+    # Verificar convergencia
+    if dispersion <= tol:
+        return solutions, errors, x, iteration
+    else:
+        return solutions, errors, None, iteration  # Si no converge
+
+def lu_factorization(a, n):
+    """
+    Factorización LU: Calcula las matrices L y U para la matriz dada.
+
+    Parámetros:
+    - a : Matriz de coeficientes (numpy array).
+    - n : Tamaño de la matriz.
+
+    Retorna:
+    - L : Matriz inferior triangular.
+    - U : Matriz superior triangular.
+    """
+    L = np.zeros((n, n))
+    U = np.array(a, dtype=float)  # Copia de la matriz original para U
+
+    for k in range(n - 1):
+        for i in range(k + 1, n):
+            if U[k][k] == 0:
+                raise ValueError("Cero en la diagonal principal, no es posible calcular LU.")
+            multiplicador = U[i][k] / U[k][k]
+            L[i][k] = multiplicador
+            for j in range(k, n):
+                U[i][j] -= multiplicador * U[k][j]
+
+    # Llenar la diagonal de L con 1s
+    np.fill_diagonal(L, 1)
+    return L, U
+
+def lu_progressive_substitution(L, b, n):
+    """
+    Sustitución progresiva para resolver Lz = b.
+
+    Parámetros:
+    - L : Matriz triangular inferior.
+    - b : Vector de términos independientes.
+    - n : Tamaño de la matriz.
+
+    Retorna:
+    - z : Vector solución intermedia.
+    """
+    z = np.zeros(n)
+    for i in range(n):
+        z[i] = (b[i] - np.dot(L[i, :i], z[:i])) / L[i, i]
+    return z
+
+def lu_regressive_substitution(U, z, n):
+    """
+    Sustitución regresiva para resolver Ux = z.
+
+    Parámetros:
+    - U : Matriz triangular superior.
+    - z : Vector solución intermedia.
+    - n : Tamaño de la matriz.
+
+    Retorna:
+    - x : Vector solución final.
+    """
+    x = np.zeros(n)
+    for i in range(n - 1, -1, -1):
+        x[i] = (z[i] - np.dot(U[i, i + 1:], x[i + 1:])) / U[i, i]
+    return x
+
+def cholesky(a, b, tol, niter, err_type="abs"):
+    """
+    Método de descomposición de Cholesky para resolver sistemas de ecuaciones lineales.
+
+    Parámetros:
+    - a : Matriz de coeficientes (numpy array).
+    - b: Vector de términos independientes (numpy array).
+    - tol: Tolerancia para el criterio de parada.
+    - niter: Número máximo de iteraciones.
+    - err_type: Tipo de error ("abs" para absoluto, "rel" para relativo).
+
+    Retorna:
+    - solutions: Lista con los vectores solución en cada iteración.
+    - errors: Lista con los errores calculados en cada iteración.
+    - approximation: Vector solución aproximado o None si no converge.
+    - iterations: Número de iteraciones realizadas.
+    """
+    a = np.array(a, dtype=float)
+    b = np.array(b, dtype=float)
+    n = len(b)
+
+    # Verificar que la matriz sea cuadrada y simétrica
+    if a.shape[0] != a.shape[1]:
+        raise ValueError("La matriz A debe ser cuadrada.")
+    if not np.allclose(a, a.T):
+        raise ValueError("La matriz A debe ser simétrica para aplicar Cholesky.")
+
+    # Inicialización
+    L = cholesky_factorization(a, n)
+    z = np.zeros(n)  # Vector auxiliar para sustitución progresiva
+    x = np.zeros(n)  # Vector solución inicial
+    solutions = [x.copy()]
+    errors = []
+    iteration = 0
+    dispersion = float("inf")
+
+    # Solución inicial usando sustitución progresiva y regresiva
+    z = c_progressive_substitution(L, b, n)
+    x_new = c_regressive_substitution(L.T, z, n)  # L.T es la matriz U en Cholesky
+
+    while dispersion > tol and iteration < niter:
+        # Cálculo de errores
+        abs_error = np.max(np.abs(x_new - x))  # Error absoluto
+        rel_error = np.max(np.abs((x_new - x) / (x_new + np.finfo(float).eps)))  # Error relativo
+        error = abs_error if err_type == "abs" else rel_error
+        errors.append(error)
+
+        # Verificar dispersión
+        dispersion = error
+        solutions.append(x_new.copy())
+        x = x_new  # Actualizar el vector solución
+        iteration += 1
+
+    # Verificar convergencia
+    if dispersion <= tol:
+        return solutions, errors, x, iteration
+    else:
+        return solutions, errors, None, iteration  # Si no converge
+
+def cholesky_factorization(a, n):
+    """
+    Factorización de Cholesky: Calcula la matriz L para la matriz dada.
+
+    Parámetros:
+    - a : Matriz de coeficientes (numpy array).
+    - n : Tamaño de la matriz.
+
+    Retorna:
+    - L : Matriz triangular inferior.
+    """
+    L = np.zeros((n, n), dtype=float)
+
+    for k in range(n):
+        # Calcular la diagonal de L
+        suma1 = sum(L[k][p] ** 2 for p in range(k))
+        if a[k][k] - suma1 <= 0:
+            raise ValueError("La matriz no es positiva definida.")
+        L[k][k] = math.sqrt(a[k][k] - suma1)
+
+        # Calcular los elementos debajo de la diagonal
+        for i in range(k + 1, n):
+            suma2 = sum(L[i][p] * L[k][p] for p in range(k))
+            L[i][k] = (a[i][k] - suma2) / L[k][k]
+
+    return L
+
+def c_progressive_substitution(L, b, n):
+    """
+    Sustitución progresiva para resolver Lz = b.
+
+    Parámetros:
+    - L : Matriz triangular inferior.
+    - b : Vector de términos independientes.
+    - n : Tamaño de la matriz.
+
+    Retorna:
+    - z : Vector solución intermedia.
+    """
+    z = np.zeros(n)
+    for i in range(n):
+        z[i] = (b[i] - np.dot(L[i, :i], z[:i])) / L[i, i]
+    return z
+
+def c_regressive_substitution(U, z, n):
+    """
+    Sustitución regresiva para resolver Ux = z.
+
+    Parámetros:
+    - U : Matriz triangular superior.
+    - z : Vector solución intermedia.
+    - n : Tamaño de la matriz.
+
+    Retorna:
+    - x : Vector solución final.
+    """
+    x = np.zeros(n)
+    for i in range(n - 1, -1, -1):
+        x[i] = (z[i] - np.dot(U[i, i + 1:], x[i + 1:])) / U[i, i]
+    return x
+
 def pivoteo_parcial(a, b, tol=1e-15, niter=100, err_type="abs"):
     """
     Método de Gauss con pivoteo parcial para resolver sistemas de ecuaciones lineales.
