@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Secant{% endblock %}
+
+{% block header %}Secant Method{% endblock %}
+
+{% block description %}
+<p>The Secant method is a root-finding algorithm that uses two initial guesses and approximates the root of a function by iteratively using a straight line to approximate the function between the two points.</p>
+{% endblock %}
+
+{% block help %}
+<p>To use the secant method:</p>
+<ol>
+    <li>Provide the function \( f(x) \).</li>
+    <li>Specify two initial guesses \( x_0 \) and \( x_1 \) for the root.</li>
+    <li>Choose a tolerance and a maximum number of iterations.</li>
+    <li>Set the desired precision (significant figures or decimal places).</li>
+</ol>
+{% endblock %}
+
+{% block syntax %}
+<p>The general syntax for the secant method is:</p>
+<pre><code>secant(f, x0, x1, tol, max_iter)</code></pre>
+<p>Where:</p>
+<ul>
+	<li><strong>f:</strong> The function for which we want to find the root.</li>
+	<li><strong>x0:</strong> The first initial guess.</li>
+	<li><strong>x1:</strong> The second initial guess.</li>
+	<li><strong>tol:</strong> The tolerance (stopping criterion).</li>
+	<li><strong>max_iter:</strong> The maximum number of iterations.</li>
+</ul>
+{% endblock %}
+
+{% block examples %}
+<p>Example: To find the root of \( f(x) = e^{-x} - x \) using the Secant method:</p>
+<pre><code>Function: e^(-x) - x
+Initial Guesses: x0 = 0, x1 = 1
+Tolerance: 0.0001
+Max Iterations: 100
+Precision: 4 decimal places</code></pre>
+{% endblock %}
+
+{% block table %}
+{% if root is not None %}
+	{% if table %}
+		<div class="table-container">
+			<h3>Iteration Table</h3>
+			<table class="iteration-table">
+				<thead>
+					<tr>
+						<th>Iteration</th>
+						<th>x_n</th>
+						<th>f(x_n)</th>
+						<th>{{ error_type }}</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for row in table %}
+						<tr>
+							<td>{{ row.iteration }}</td>
+							<td>{{ row.x_n }}</td>
+							<td>{{ row.fx_n }}</td>
+							<td>{{ row.error }}</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	{% endif %}
+{% endif %}
+{% endblock %}
+
+{% block form %}
+<form method="POST" action="{% url 'secant' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="submit-btn">Calculate</button>
+</form>
+{% endblock %}
+
+{% block graph %}
+{% if graph %}
+    <img src="data:image/png;base64,{{ graph }}" id="functionGraph" alt="Graph of f(x)">
+{% endif %}
+{% endblock %}

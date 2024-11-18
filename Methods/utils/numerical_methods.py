@@ -24,6 +24,7 @@ def bisection_method(xi, xs, tol, niter, fun, to_math):
     # Inicializar las listas para almacenar los valores de la función y los errores.
     fm = []  # Lista para valores de f(x) en cada iteración.
     error = []  # Lista para errores absolutos en cada iteración.
+    xm_values = [xi]  # Lista para almacenar los valores de x_m.
 
     # Evaluar la función en los extremos del intervalo inicial.
     fi = eval(fun, {"x": xi, "math": math}, to_math)  # f(xi)
@@ -42,6 +43,7 @@ def bisection_method(xi, xs, tol, niter, fun, to_math):
         xm = (xi + xs) / 2  # Punto medio inicial.
         fe = eval(fun, {"x": xm, "math": math}, to_math)  # f(xm)
         fm.append(fe)  # Guardar el valor de f(xm).
+        xm_values.append(xm)  # Guardar el valor de x_m.
         error.append(100)  # Inicializar el error con un valor alto.
 
         # Iterar mientras el error sea mayor que la tolerancia, no se alcance una raíz exacta,
@@ -62,6 +64,7 @@ def bisection_method(xi, xs, tol, niter, fun, to_math):
             xm = (xi + xs) / 2  # Nuevo punto medio.
             fe = eval(fun, {"x": xm, "math": math}, to_math)  # Recalcular f(xm).
             fm.append(fe)  # Guardar el nuevo valor de f(xm).
+            xm_values.append(xm)  # Guardar el nuevo valor de x_m.
             # Calcular el error absoluto entre los puntos medios consecutivos.
             abs_error = abs(xm - xa)
             error.append(abs_error)  # Guardar el error en la lista.
@@ -70,17 +73,19 @@ def bisection_method(xi, xs, tol, niter, fun, to_math):
         # Verificar las condiciones de parada.
         if fe == 0 or abs_error < tol:
             # Si f(xm) = 0 o el error es menor que la tolerancia, se encontró la raíz.
-            return fm, error, xm, c
+            return fm, error,xm_values, xm, c
         else:
             # Si se alcanzó el máximo de iteraciones sin convergencia, devolver los resultados obtenidos.
-            return fm, error, xm, niter
+            return fm, error,xm_values, xm, niter
     else:
         # Si no hay un cambio de signo en el intervalo, no hay garantía de raíz.
-        return [], [], None, None
+        return [], [], [], None, None
 
 def falseposition_method(xi, xs, tol, niter, fun, to_math):
     fm = []
     error = []
+    xm_values = [xi]
+    
     fi = eval(fun, {"x": xi, "math": math}, to_math)
     fs = eval(fun, {"x": xs, "math": math}, to_math)
 
@@ -93,6 +98,7 @@ def falseposition_method(xi, xs, tol, niter, fun, to_math):
         xm = xs - (fs * (xi - xs)) / (fi - fs)
         fe = eval(fun, {"x": xm, "math": math}, to_math)
         fm.append(fe)
+        xm_values.append(xm)
         error.append(100)
 
         while error[c] > tol and fe != 0 and c < niter:
@@ -107,16 +113,17 @@ def falseposition_method(xi, xs, tol, niter, fun, to_math):
             xm = xs - (fs * (xi - xs)) / (fi - fs)
             fe = eval(fun, {"x": xm, "math": math}, to_math)
             fm.append(fe)
+            xm_values.append(xm)
             abs_error = abs(xm - xa)
             error.append(abs_error)
             c += 1
 
         if fe == 0 or abs_error < tol:
-            return fm, error, xm, c
+            return fm, error,xm_values, xm, c
         else:
-            return fm, error, xm, niter
+            return fm, error,xm_values, xm, niter
     else:
-        return [], [], None, None
+        return [], [],[], None, None
 
 def fixed_point_method(gx, xo, tol, niter, precision_value, precision_type, to_math):
     # Crear una función evaluable a partir de gx usando eval y to_math
@@ -215,3 +222,145 @@ def incremental_search_method(fx, x0, delta_x, niter, to_math):
 
     # Retornar los resultados
     return intervals, evaluations, i + 1
+
+def secant_method(x0, x1, tol, niter, fun, to_math):
+    """
+    Método de la Secante para encontrar la raíz de una función.
+    
+    Parámetros:
+    - x0: Primer valor inicial.
+    - x1: Segundo valor inicial.
+    - tol: Tolerancia para el error absoluto.
+    - niter: Número máximo de iteraciones permitidas.
+    - fun: Función a evaluar como cadena (string).
+    - to_math: Diccionario con funciones matemáticas seguras.
+
+    Retorna:
+    - fm: Lista con los valores de la función en cada iteración.
+    - error: Lista con los errores absolutos en cada iteración.
+    - x1: Valor aproximado de la raíz.
+    - c: Número de iteraciones realizadas.
+    """
+    # Inicializar las listas para almacenar los valores de la función y los errores.
+    fm = []  # Lista para valores de f(x) en cada iteración.
+    error = []  # Lista para errores absolutos en cada iteración.
+    xn_values = [x0, x1]  # Lista para almacenar los valores de x_n.
+
+    # Evaluar la función en los puntos iniciales x0 y x1.
+    f0 = eval(fun, {"x": x0, "math": math}, to_math)  # f(x0)
+    f1 = eval(fun, {"x": x1, "math": math}, to_math)  # f(x1)
+
+    # Comprobar si alguno de los puntos iniciales es una raíz.
+    if f0 == 0:
+        return [], [], [x0], x0, 0  # x0 es la raíz exacta.
+    elif f1 == 0:
+        return [], [],[x0], x1, 0  # x1 es la raíz exacta.
+
+    # Inicializar variables para el proceso iterativo.
+    c = 0  # Contador de iteraciones.
+    error.append(100)  # Inicializar el error con un valor alto.
+
+    # Iterar mientras el error sea mayor que la tolerancia, no se alcance una raíz exacta,
+    # y no se supere el número máximo de iteraciones.
+    while error[c] > tol and f1 != 0 and (f1 - f0) != 0 and c < niter:
+        # Calcular el siguiente valor de x usando la fórmula de la secante.
+        x2 = x1 - f1 * (x1 - x0) / (f1 - f0)
+        xn_values.append(x2)
+
+        # Calcular el error absoluto.
+        abs_error = abs(x2 - x1)
+        error.append(abs_error)  # Guardar el error en la lista.
+
+        # Evaluar la función en el nuevo valor x2.
+        f2 = eval(fun, {"x": x2, "math": math}, to_math)  # f(x2)
+        fm.append(f2)  # Guardar el valor de f(x2) en la lista.
+
+        # Actualizar los valores para la siguiente iteración.
+        x0, f0 = x1, f1  # Desplazar x1 a x0.
+        x1, f1 = x2, f2  # Actualizar x1 con el nuevo x2.
+        c += 1  # Incrementar el contador de iteraciones.
+
+    # Verificar las condiciones de parada.
+    if f1 == 0:
+        # Si f(x1) = 0, x1 es una raíz exacta.
+        return fm, error, xn_values, x1, c
+    elif error[-1] < tol:
+        # Si el error es menor que la tolerancia, x1 es una aproximación de la raíz.
+        return fm, error, xn_values, x1, c
+    elif (f1 - f0) == 0:
+        # Si el denominador es cero, puede haber una raíz múltiple.
+        return fm, error, xn_values, None, c
+    else:
+        # Si se alcanzó el máximo de iteraciones sin convergencia, devolver los resultados obtenidos.
+        return fm, error, xn_values, x1, niter
+
+def newton_method(f, df, x0, tol, niter, to_math):
+    """
+    Método de Newton para encontrar la raíz de una función.
+
+    Parámetros:
+    - f: Función a evaluar como cadena (string).
+    - df: Derivada de la función como cadena (string).
+    - x0: Valor inicial.
+    - tol: Tolerancia para el error absoluto.
+    - niter: Número máximo de iteraciones permitidas.
+    - to_math: Diccionario con funciones matemáticas seguras.
+
+    Retorna:
+    - fx_values: Lista con los valores de f(x) en cada iteración.
+    - error: Lista con los errores absolutos en cada iteración.
+    - x_values: Lista con los valores de x en cada iteración.
+    - x0: Valor aproximado de la raíz.
+    - c: Número de iteraciones realizadas.
+    """
+    # Inicializar listas para almacenar resultados de cada iteración
+    fx_values = []  # Lista para valores de f(x) en cada iteración.
+    error = []  # Lista para errores absolutos en cada iteración.
+    x_values = [x0]  # Lista para almacenar los valores de x en cada iteración.
+
+    # Evaluar la función y su derivada en el punto inicial
+    fx = eval(f, {"x": x0, "math": math}, to_math)  # f(x0)
+    dfx = eval(df, {"x": x0, "math": math}, to_math)  # f'(x0)
+
+    # Comprobar si el punto inicial ya es una raíz
+    if fx == 0:
+        return [], [], [x0], x0, 0  # x0 es la raíz exacta.
+
+    c = 0  # Contador de iteraciones
+    error.append(100)  # Inicializar el error con un valor alto.
+
+    # Iterar mientras el error sea mayor que la tolerancia, no se alcance una raíz exacta,
+    # y no se supere el número máximo de iteraciones.
+    while error[c] > tol and fx != 0 and dfx != 0 and c < niter:
+        # Calcular el siguiente valor de x
+        x1 = x0 - (fx / dfx)
+
+        # Calcular el error absoluto
+        abs_error = abs(x1 - x0)
+        error.append(abs_error)  # Guardar el error en la lista.
+
+        # Evaluar la función y su derivada en el nuevo valor x1
+        fx = eval(f, {"x": x1, "math": math}, to_math)  # f(x1)
+        dfx = eval(df, {"x": x1, "math": math}, to_math)  # f'(x1)
+
+        # Guardar los valores en las listas correspondientes
+        fx_values.append(fx)  # Guardar el valor de f(x1).
+        x_values.append(x1)  # Guardar el nuevo valor de x1.
+
+        # Actualizar x0 para la siguiente iteración
+        x0 = x1
+        c += 1  # Incrementar el contador de iteraciones.
+
+    # Verificar las condiciones de parada.
+    if fx == 0:
+        # Si f(x) = 0, x es una raíz exacta.
+        return fx_values, error, x_values, x0, c
+    elif error[-1] < tol:
+        # Si el error es menor que la tolerancia, x es una aproximación de la raíz.
+        return fx_values, error, x_values, x0, c
+    elif dfx == 0:
+        # Si la derivada es cero, puede haber una raíz múltiple.
+        return fx_values, error, x_values, None, c
+    else:
+        # Si se alcanzó el máximo de iteraciones sin convergencia, devolver los resultados obtenidos.
+        return fx_values, error, x_values, x0, niter

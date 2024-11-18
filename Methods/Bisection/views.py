@@ -21,7 +21,7 @@ def bisection_view(request):
                 # Reemplazar '^' con '**' para la sintaxis de potencia en Python
                 fun = fun.replace(' ', '')
                 # Ejecutar el método de bisección
-                fm, error, root, iterations = nm.bisection_method(xi, xs, tol, n_iter, fun, rs.to_math)
+                fm, error,xm_values, root, iterations = nm.bisection_method(xi, xs, tol, n_iter, fun, rs.to_math)
                 # Definir el tipo de error a mostrar en la tabla
                 error_type = 'Relative Error' if precision_type == 'significant_figures' else 'Absolute Error'
 
@@ -42,7 +42,7 @@ def bisection_view(request):
                     'fx': fun,
                     'msg': ['Cálculo completado'],
                     'graph': img_base64,
-                    'table': [{'iteration': i, 'x_n': fm[i], 'fx_n': fm[i], 'error': error[i]} for i in range(iterations)],
+                    'table': [{'iteration': i, 'x_n': xm_values[i], 'fx_n': fm[i], 'error': error[i]} for i in range(iterations)],
                     'error_type': error_type,
                     'root': root,
                 }
