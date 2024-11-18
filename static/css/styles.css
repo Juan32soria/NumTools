@@ -32,6 +32,12 @@ body {
 	background-image: url("../images/Bg.png");
 	background-size: cover;
 	background-attachment: fixed;
+	width: 100%;
+}
+
+.container {
+	max-width: 100%;
+	width: 100%;
 }
 
 /* Custom Scrollbar */
@@ -53,6 +59,7 @@ body {
 /* Navbar Styles */
 .navbar {
 	position: sticky;
+	width: 100%;
 	top: 0;
 	left: 0;
 	right: 0;
@@ -347,6 +354,7 @@ body {
 	box-shadow: 0 -4px 16px 0 rgba(31, 38, 135, 0.2); /* Reducir la sombra */
 	padding: 1.5rem 0; /* Reducir el espacio interno */
 	margin-top: 1rem; /* Reducir la separación del contenido superior */
+	width: 100%;
 }
 
 .footer-container {

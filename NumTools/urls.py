@@ -27,4 +27,5 @@ urlpatterns = [
     path('secant/', include('Methods.Secant.urls')),
     path('newton/', include('Methods.Newton.urls')),
     path('multipleroots/', include('Methods.MultipleRoots.urls')),
+    path('jacobi/', include('Methods.Jacobi.urls')),
 ]

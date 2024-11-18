@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'Methods.Secant',
     'Methods.Newton',
     'Methods.MultipleRoots',
+    'Methods.Jacobi',
 ]
 
 MIDDLEWARE = [

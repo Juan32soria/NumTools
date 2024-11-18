@@ -1,6 +1,5 @@
 import math
-import sympy as sp
-from sympy import sympify, lambdify, Symbol
+import numpy as np
 import Methods.utils.resources as rs
 
 def bisection_method(xi, xs, tol, niter, fun, to_math):
@@ -442,3 +441,61 @@ def multipleroots_method(x0, fun, df1, df2, tol, niter, to_math):
     else:
         # Si se alcanzó el máximo de iteraciones sin convergencia, devolver los resultados obtenidos.
         return fm, error, x_values, None, c
+
+def jacobi_method(a, b, xo, tol, niter, err_type):
+    """
+    Método de Jacobi para resolver sistemas de ecuaciones lineales.
+
+    Parámetros:
+    - a : Matriz de coeficientes (numpy array).
+    - b: Vector de términos independientes (numpy array).
+    - xo: Vector inicial (numpy array).
+    - tol: Tolerancia para el criterio de parada.
+    - niter: Número máximo de iteraciones.
+    - err_type: Tipo de error ("abs" para absoluto, "rel" para relativo).
+
+    Retorna:
+    - solutions: Lista con los vectores solución en cada iteración.
+    - errors: Lista con los errores calculados en cada iteración.
+    - approximation: Vector solución aproximado o None si no converge.
+    - iterations: Número de iteraciones realizadas.
+    """
+    a = np.array(a, dtype=float)
+    b = np.array(b, dtype=float)
+    xo = np.array(xo, dtype=float)
+
+    # Verificar que la diagonal no tenga ceros
+    if np.any(np.diag(a) == 0):
+        raise ValueError("La matriz tiene ceros en la diagonal principal, Jacobi no es aplicable.")
+    
+    # Verificar si la matriz es diagonal dominante (recomendado pero opcional)
+    for i in range(len(b)):
+        if 2 * abs(a[i, i]) <= np.sum(np.abs(a[i, :])):
+            print("Advertencia: La matriz puede no ser diagonal dominante, el método podría no converger.")
+            break
+
+    solutions = [xo]
+    errors = []
+    x_prev = xo.copy()
+    iteration = 0
+    dispersion = float("inf")
+
+    while dispersion > tol and iteration < niter:
+        x_new = np.zeros_like(x_prev)
+        for i, _ in enumerate(b):
+            suma = np.dot(a[i, :], x_prev) - a[i, i] * x_prev[i]
+            x_new[i] = (b[i] - suma) / a[i, i]
+
+        abs_error = np.max(np.abs(x_new - x_prev))
+        rel_error = np.max(np.abs((x_new - x_prev) / (x_new + np.finfo(float).eps)))  # Evitar división por cero
+        errors.append(abs_error if err_type == "abs" else rel_error)
+        
+        dispersion = errors[-1]
+        solutions.append(x_new.copy())
+        x_prev = x_new
+        iteration += 1
+
+    if dispersion <= tol:
+        return solutions, errors, x_new, iteration
+    else:
+        return solutions, errors, None, iteration

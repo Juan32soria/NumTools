@@ -58,7 +58,7 @@
 									<h3>System Ecuations Solutions</h3>
 									<a href="#">Simple Gauss Elimination</a>
 									<a href="#">Gauss-Seidel Method</a>
-									<a href="#">Jacobi's Method'</a>
+									<a href="{% url 'jacobi' %}">Jacobi's Method'</a>
 								</div>
 								<div class="dropdown-column">
 									<h3>Interpolation</h3>
@@ -154,6 +154,16 @@
 									<p>The approximate interval for the function: <span class="function-value">{{ fx }}</span> is</p>
 									{% for interval in intervals %}
 										<p class="interval-value">{{ interval }}</p>
+									{% endfor %}
+								</div>
+							</div>
+						{% elif solutions is not None %}
+							<div class="results-section glass-container">
+								<h2>Results</h2>
+								<div class="result-content">
+									<p><span class="function-value">The solutions for the system of equations are:</span></p>
+									{% for solution in solutions %}
+										<p class="solution-value">{{ solution }}</p>
 									{% endfor %}
 								</div>
 							</div>
