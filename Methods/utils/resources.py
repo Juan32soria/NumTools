@@ -7,7 +7,30 @@ import matplotlib
 
 matplotlib.use('Agg')  # Backend sin interfaz gráfica
 
-to_math = {"math": math}
+to_math = {
+    'sin': math.sin,
+    'cos': math.cos,
+    'tan': math.tan,
+    'pi': math.pi,
+    'e': math.e,
+    'log': math.log,
+    'log10': math.log10,
+    'log2': math.log2,
+    'exp': math.exp,
+    'sqrt': math.sqrt,
+    'abs': abs,
+    'asin': math.asin,
+    'acos': math.acos,
+    'atan': math.atan,
+    'atan2': math.atan2,
+    'sinh': math.sinh,
+    'cosh': math.cosh,
+    'tanh': math.tanh,
+    'gamma': math.gamma,
+    'lgamma': math.lgamma
+}
+
+to_maths = {"math": math}
 
 def generate_graph(xi, xs, fun, root=None):
     fig, ax = plt.subplots()
@@ -85,7 +108,7 @@ def generate_interval_graph(fx, intervals):
 
     return img_base64
 
-def generate_jacobi_solution_graph(solutions, b):
+def generate_solution_graph(solutions, b):
     """
     Genera una gráfica para mostrar cómo las soluciones del método de Jacobi
     convergen a lo largo de las iteraciones.
@@ -116,7 +139,7 @@ def generate_jacobi_solution_graph(solutions, b):
     ax.axhline(y=np.linalg.norm(b), color="gold", linestyle="--", label="Expected Convergence")
 
     # Personalizar el gráfico
-    ax.set_title("Convergence of Jacobi Method", fontsize=14)
+    ax.set_title("Convergence of the Method", fontsize=14)
     ax.set_xlabel("Iteration", fontsize=12)
     ax.set_ylabel("Solution Components", fontsize=12)
     ax.legend(loc="best")

@@ -28,4 +28,5 @@ urlpatterns = [
     path('newton/', include('Methods.Newton.urls')),
     path('multipleroots/', include('Methods.MultipleRoots.urls')),
     path('jacobi/', include('Methods.Jacobi.urls')),
+    path('simplegauss/', include('Methods.SimpleGauss.urls')),
 ]

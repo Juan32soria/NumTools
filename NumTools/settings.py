@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'Methods.Newton',
     'Methods.MultipleRoots',
     'Methods.Jacobi',
+    'Methods.SimpleGauss',
 ]
 
 MIDDLEWARE = [

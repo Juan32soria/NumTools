@@ -499,3 +499,62 @@ def jacobi_method(a, b, xo, tol, niter, err_type):
         return solutions, errors, x_new, iteration
     else:
         return solutions, errors, None, iteration
+
+def simple_gauss(a, b, tol, niter, err_type="abs"):
+    """
+    Método de eliminación de Gauss para resolver sistemas de ecuaciones lineales.
+
+    Parámetros:
+    - a : Matriz de coeficientes (numpy array).
+    - b: Vector de términos independientes (numpy array).
+    - tol: Tolerancia para el criterio de parada.
+    - niter: Número máximo de iteraciones.
+    - err_type: Tipo de error ("abs" para absoluto, "rel" para relativo).
+
+    Retorna:
+    - solutions: Lista con los vectores solución en cada iteración.
+    - errors: Lista con los errores calculados en cada iteración.
+    - approximation: Vector solución aproximado o None si no converge.
+    - iterations: Número de iteraciones realizadas.
+    """
+    a = np.array(a, dtype=float)
+    b = np.array(b, dtype=float)
+    n = len(b)
+    ab = np.column_stack((a, b))  # Crear la matriz aumentada
+    solutions = []
+    errors = []
+    iteration = 0
+
+    # Eliminación de Gauss
+    for k in range(n - 1):
+        for i in range(k + 1, n):
+            if ab[k][k] == 0:
+                raise ValueError("Cero en la diagonal, la matriz no puede resolverse con Gauss.")
+            multiplicador = ab[i][k] / ab[k][k]
+            for j in range(k, n + 1):
+                ab[i][j] -= multiplicador * ab[k][j]
+        solutions.append(ab.copy())  # Almacenar cada etapa de la matriz
+
+    # Sustitución regresiva
+    x = np.zeros(n)
+    x[-1] = ab[-1][-1] / ab[-1][-2]
+    for i in range(n - 2, -1, -1):
+        suma = sum(ab[i][j] * x[j] for j in range(i + 1, n))
+        x[i] = (ab[i][-1] - suma) / ab[i][i]
+
+    # Calcular errores (opcional)
+    for _ in range(niter):
+        iteration += 1
+        if err_type == "abs":
+            error = np.max(np.abs(b - np.dot(a, x)))
+        elif err_type == "rel":
+            error = np.max(np.abs((b - np.dot(a, x)) / (b + np.finfo(float).eps)))
+        else:
+            raise ValueError("Tipo de error no válido. Use 'abs' o 'rel'.")
+        errors.append(error)
+
+        # Verificar tolerancia
+        if error <= tol:
+            return solutions, errors, x, iteration
+
+    return solutions, errors, None, iteration  # Si no converge
