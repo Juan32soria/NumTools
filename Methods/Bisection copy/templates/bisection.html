@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}Bisection{% endblock %}
+
+{% block header %}Bisection Method{% endblock %}
+
+{% block description %}
+<p>The bisection method is a root-finding algorithm that repeatedly bisects an interval and then selects a subinterval in which a root must lie for further processing.</p>
+{% endblock %}
+
+{% block help %}
+<p>To use the bisection method:</p>
+{% endblock %}
+
+{% block syntax %}
+<p>The general syntax for the bisection method is:</p>
+<pre><code>bisection(f, a, b, tol, max_iter)</code></pre>
+<p>Where:</p>
+<ul>
+	<li>f: The function for which we want to find the root</li>
+	<li>a, b: The interval endpoints</li>
+	<li>tol: The tolerance (stopping criterion)</li>
+	<li>max_iter: The maximum number of iterations</li>
+</ul>
+{% endblock %}
+
+{% block examples %}
+<p>Example: To find the root of f(x) = x^2 - 2 in the interval [0, 2]</p>
+<pre><code>Function: x^2 - 2
+Interval: [0, 2]
+Tolerance: 0.0001
+Max Iterations: 100
+Precision: 4 decimal places</code></pre>
+{% endblock %}
+
+{% block table %}
+{% if root is not None %}
+	{% if table %}
+		<div class="table-container">
+			<h3>Iteration Table</h3>
+			<table class="iteration-table">
+				<thead>
+					<tr>
+						<th>Iteration</th>
+						<th>x_n</th>
+						<th>f(x_n)</th>
+						<th>{{ error_type }}</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for row in table %}
+						<tr>
+							<td>{{ row.iteration }}</td>
+							<td>{{ row.x_n }}</td>
+							<td>{{ row.fx_n }}</td>
+							<td>{{ row.error }}</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	{% endif %}
+{% endif %}
+{% endblock %}
+
+{% block form %}
+<form method="POST" action="{% url 'bisection' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="submit-btn">Calculate</button>
+</form>
+{% endblock %}
+
+{% block graph %}
+<img src="data:image/png;base64,{{ graph }}" id="functionGraph" alt="Graph of f(x)">
+{% endblock %}
