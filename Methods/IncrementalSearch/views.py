@@ -14,24 +14,36 @@ def incrementalsearch_view(request):
             delta_x = form.cleaned_data['delta_x']
             niter = form.cleaned_data['niter']
 
-            # Ejecutar el método de Búsquedas Incrementales
-            intervals, evaluations, steps = nm.incremental_search_method(fx, x0, delta_x, niter, rs.to_math)
+            try:
+                # Ejecutar el método de Búsquedas Incrementales
+                intervals, evaluations, steps = nm.incremental_search_method(fx, x0, delta_x, niter, rs.to_math)
 
-            # Crear gráfico de la función
-            img_base64 = rs.generate_interval_graph(fx, intervals)
+                # Validar si no se encontraron intervalos
+                if not intervals:
+                    raise ValueError("No se encontraron intervalos con cambio de signo en el rango dado.")
 
-            # Crear contexto con los resultados
-            context = {
-                'form': form,
-                'intervals': intervals,
-                'table': [{'steps': idx + 1, 'x': eval[0], 'fx_n': eval[1]} for idx, eval in enumerate(evaluations)],
-                'evaluations': evaluations,
-                'fx': fx,
-                'graph': img_base64,
-                'msg': ['Completed successfully.'],
-            }
+                # Crear gráfico de la función
+                img_base64 = rs.generate_interval_graph(fx, intervals)
+
+                # Crear contexto con los resultados
+                context = {
+                    'form': form,
+                    'intervals': intervals,
+                    'table': [{'steps': idx + 1, 'x': eval[0], 'fx_n': eval[1]} for idx, eval in enumerate(evaluations)],
+                    'evaluations': evaluations,
+                    'fx': fx,
+                    'graph': img_base64,
+                    'msg': ['Completed successfully.'],
+                }
+            except Exception as e:
+                # Manejo de errores y mensajes al usuario
+                context = {
+                    'form': form,
+                    'msg': [f'Error: {str(e)}'],
+                }
         else:
             context['form'] = form
     else:
         context['form'] = IncrementalSearchForm()
+
     return render(request, 'incrementalsearch.html', context)

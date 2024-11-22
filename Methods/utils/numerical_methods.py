@@ -187,53 +187,45 @@ def fixed_point_method(gx, xo, tol, niter, precision_value, precision_type, to_m
         "iterations_count": c
     }
 
+import numpy as np
+
 def incremental_search_method(fx, x0, delta_x, niter, to_math):
     """
-    Método de Búsquedas Incrementales para encontrar un intervalo que contenga una raíz.
+    Método de búsqueda incremental para encontrar intervalos con cambio de signo.
 
-    Parámetros:
-    - fx: Función como cadena (string) a evaluar, e.g., "x**3 - x - 2".
-    - x0: Valor inicial de partida.
-    - delta_x: Tamaño del incremento en x.
-    - niter: Número máximo de iteraciones.
-    - to_math: Diccionario con funciones matemáticas seguras.
-
-    Retorna:
-    - intervals: Lista de tuplas con los intervalos donde hay cambio de signo.
-    - evaluations: Lista de tuplas (x, f(x)) evaluados.
-    - steps: Número de iteraciones realizadas.
+    :param fx: Función como cadena.
+    :param x0: Valor inicial.
+    :param delta_x: Tamaño del paso.
+    :param niter: Número máximo de iteraciones.
+    :param to_math: Diccionario de funciones matemáticas.
+    :return: Lista de intervalos con cambio de signo, evaluaciones y pasos realizados.
     """
     intervals = []
     evaluations = []
+    steps = 0
 
-    # Evaluar f(x0)
-    x_n = x0
-    f_xn = eval(fx, {"x": x_n, "math": math}, to_math)
+    # Validar si los parámetros son correctos
+    if delta_x <= 0 or niter <= 0:
+        raise ValueError("delta_x debe ser mayor a 0 y niter debe ser un entero positivo.")
 
-    # Verificar si el punto inicial ya es una raíz
-    if f_xn == 0:
-        return [(x_n, x_n)], [(x_n, f_xn)], 0
+    try:
+        x = x0
+        f_prev = eval(fx, {"x": x, "math": np}, to_math)
+        for i in range(niter):
+            x_next = x + delta_x
+            f_next = eval(fx, {"x": x_next, "math": np}, to_math)
 
-    # Ciclo de iteraciones
-    for i in range(niter):
-        x_next = x_n + delta_x
-        f_xnext = eval(fx, {"x": x_next, "math": math}, to_math)
+            # Agregar intervalos si hay cambio de signo
+            if f_prev * f_next < 0:
+                intervals.append((x, x_next))
+            evaluations.append((x, f_prev))
+            x = x_next
+            f_prev = f_next
+            steps += 1
+    except Exception as e:
+        raise ValueError(f"Error al evaluar la función: {e}")
 
-        evaluations.append((x_n, f_xn))  # Guardar evaluación como tupla
-
-        # Verificar cambio de signo
-        if f_xn * f_xnext < 0:
-            intervals.append((x_n, x_next))
-            evaluations.append((x_next, f_xnext))  # Incluir evaluación final
-            break
-
-        x_n = x_next
-        f_xn = f_xnext
-
-    # Si no se encuentra un cambio de signo, agregar última evaluación
-    evaluations.append((x_n, f_xn))
-
-    return intervals, evaluations, i + 1
+    return intervals, evaluations, steps
 
 
 def secant_method(x0, x1, tol, niter, fun, to_math):
