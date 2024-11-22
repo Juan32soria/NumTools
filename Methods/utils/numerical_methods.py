@@ -81,13 +81,26 @@ def bisection_method(xi, xs, tol, niter, fun, to_math):
         return [], [], [], None, None
 
 def falseposition_method(xi, xs, tol, niter, fun, to_math):
+    # Validar el número máximo de iteraciones
+    if not isinstance(niter, int) or niter <= 0:
+        raise ValueError("El número máximo de iteraciones debe ser un entero positivo.")
+
+    # Validar la fórmula
+    if not fun or not isinstance(fun, str):
+        raise ValueError("La función no puede estar vacía y debe ser una cadena válida.")
+
     fm = []
     error = []
     xm_values = [xi]
-    
-    fi = eval(fun, {"x": xi, "math": math}, to_math)
-    fs = eval(fun, {"x": xs, "math": math}, to_math)
 
+    # Evaluar los valores iniciales
+    try:
+        fi = eval(fun, {"x": xi, "math": math}, to_math)
+        fs = eval(fun, {"x": xs, "math": math}, to_math)
+    except Exception as e:
+        raise ValueError(f"Error al evaluar la función: {e}")
+
+    # Comprobar si hay raíces en los extremos del intervalo
     if fi == 0:
         return [], [], xi, 0
     elif fs == 0:
@@ -95,7 +108,11 @@ def falseposition_method(xi, xs, tol, niter, fun, to_math):
     elif fs * fi < 0:
         c = 0
         xm = xs - (fs * (xi - xs)) / (fi - fs)
-        fe = eval(fun, {"x": xm, "math": math}, to_math)
+        try:
+            fe = eval(fun, {"x": xm, "math": math}, to_math)
+        except Exception as e:
+            raise ValueError(f"Error al evaluar la función en xm: {e}")
+
         fm.append(fe)
         xm_values.append(xm)
         error.append(100)
@@ -106,7 +123,7 @@ def falseposition_method(xi, xs, tol, niter, fun, to_math):
                 fs = eval(fun, {"x": xs, "math": math}, to_math)
             else:
                 xi = xm
-                fs = eval(fun, {"x": xi, "math": math}, to_math)
+                fi = eval(fun, {"x": xi, "math": math}, to_math)
 
             xa = xm
             xm = xs - (fs * (xi - xs)) / (fi - fs)
@@ -118,11 +135,11 @@ def falseposition_method(xi, xs, tol, niter, fun, to_math):
             c += 1
 
         if fe == 0 or abs_error < tol:
-            return fm, error,xm_values, xm, c
+            return fm, error, xm_values, xm, c
         else:
-            return fm, error,xm_values, xm, niter
+            return fm, error, xm_values, xm, niter
     else:
-        return [], [],[], None, None
+        raise ValueError("La función no cambia de signo en el intervalo dado.")
 
 def fixed_point_method(gx, xo, tol, niter, precision_value, precision_type, to_math):
     # Crear una función evaluable a partir de gx usando eval y to_math
@@ -183,10 +200,9 @@ def incremental_search_method(fx, x0, delta_x, niter, to_math):
 
     Retorna:
     - intervals: Lista de tuplas con los intervalos donde hay cambio de signo.
-    - evaluations: Lista de evaluaciones de la función en los puntos x_n.
+    - evaluations: Lista de tuplas (x, f(x)) evaluados.
     - steps: Número de iteraciones realizadas.
     """
-    # Inicializar listas para almacenar intervalos y evaluaciones
     intervals = []
     evaluations = []
 
@@ -196,31 +212,29 @@ def incremental_search_method(fx, x0, delta_x, niter, to_math):
 
     # Verificar si el punto inicial ya es una raíz
     if f_xn == 0:
-        return [(x_n, x_n)], [f_xn], 0  # Intervalo único, raíz exacta encontrada
+        return [(x_n, x_n)], [(x_n, f_xn)], 0
 
-    # Comenzar el ciclo de iteraciones
+    # Ciclo de iteraciones
     for i in range(niter):
-        # Calcular el siguiente punto
         x_next = x_n + delta_x
-
-        # Evaluar f(x_next)
         f_xnext = eval(fx, {"x": x_next, "math": math}, to_math)
 
-        # Guardar la evaluación actual
-        evaluations.append((x_n, f_xn))
+        evaluations.append((x_n, f_xn))  # Guardar evaluación como tupla
 
-        # Verificar cambio de signo entre f(x_n) y f(x_next)
+        # Verificar cambio de signo
         if f_xn * f_xnext < 0:
-            intervals.append((x_n, x_next))  # Guardar el intervalo donde ocurre el cambio de signo
-            evaluations.append((x_next, f_xnext))
-            break  # Detener el proceso, ya que se encontró un cambio de signo
+            intervals.append((x_n, x_next))
+            evaluations.append((x_next, f_xnext))  # Incluir evaluación final
+            break
 
-        # Preparar para la siguiente iteración
         x_n = x_next
         f_xn = f_xnext
 
-    # Retornar los resultados
+    # Si no se encuentra un cambio de signo, agregar última evaluación
+    evaluations.append((x_n, f_xn))
+
     return intervals, evaluations, i + 1
+
 
 def secant_method(x0, x1, tol, niter, fun, to_math):
     """
